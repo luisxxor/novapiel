@@ -1,0 +1,6 @@
+
+hola soy
+<?php
+
+$nombre;
+?>
