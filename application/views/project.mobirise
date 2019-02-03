@@ -339,7 +339,7 @@
                 "overlay": true,
                 "contentAlign": "center",
                 "text": "",
-                "buttons": " <a data-app-btn=\"true\" class=\"btn  btn-white-outline display-4\" data-app-placeholder=\"Type Text\" href=\"https://mobirise.com\" data-toolbar=\"-mbrBtnMove\">PARA MAC</a>",
+                "buttons": " <a data-app-btn=\"true\" class=\"btn  btn-white-outline display-4\" data-app-placeholder=\"Type Text\" href=\"<?PHP echo base_url(); ?>m\" data-toolbar=\"-mbrBtnMove\">PARA MAC</a>",
                 "overlayOpacity": "0.2"
               },
               {

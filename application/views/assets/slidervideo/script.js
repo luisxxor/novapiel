@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     // youtube or vimeo
@@ -33,7 +33,7 @@
     function getVimeoPreviewUrl(vimeoId, callback) {
         var request = new XMLHttpRequest();
         request.open('GET', 'https://vimeo.com/api/v2/video/' + vimeoId + '.json', true);
-        request.onreadystatechange = function() {
+        request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 if (this.status >= 200 && this.status < 400) {
                     var response = JSON.parse(this.responseText);
@@ -46,10 +46,10 @@
         request = null;
     }
 
-    var getYTPreviewUrlWithBestQuality = (function() {
+    var getYTPreviewUrlWithBestQuality = (function () {
         var cache = {};
 
-        return function(id) {
+        return function (id) {
             var def = $.Deferred();
             if (id in cache) {
                 if (cache[id]) {
@@ -58,7 +58,7 @@
                     def.reject('Preview image not found.');
                 }
             } else {
-                $('<img>').on('load', function() {
+                $('<img>').on('load', function () {
                     if (120 === (this.naturalWidth || this.width)) {
                         // selection of preview in the best quality
                         var file = this.src.split('/').pop();
@@ -92,11 +92,11 @@
      * load videopreview from youtube/vimeo on 'add' event and enable YTPlayer/vimeo_player
      * */
     if (!$('html').hasClass('is-builder')) {
-        $(document).on('add.cards', function(event) {
+        $(document).on('add.cards', function (event) {
             if (!$(event.target).hasClass('carousel')) return;
             var isDesktop = $('html').hasClass('desktop');
 
-            $(event.target).outerFind('[data-bg-video-slide]').each(function() {
+            $(event.target).outerFind('[data-bg-video-slide]').each(function () {
                 var videoId = getVideoId($(this).attr('data-bg-video-slide'));
                 if (!videoId) return;
 
@@ -111,7 +111,7 @@
                 var $overlay = $(this).find('.mbr-overlay');
 
                 if (playerName === 'youtube') {
-                    getYTPreviewUrlWithBestQuality(videoId).done(function(url) {
+                    getYTPreviewUrlWithBestQuality(videoId).done(function (url) {
                         $preview.css('background-image', 'url("' + url + '")').show();
                     });
 
@@ -136,7 +136,7 @@
                         $(this).find('.image_wrapper .mbr-overlay').css('opacity', '0');
                     }
                 } else {
-                    getVimeoPreviewUrl(videoId, function(url) {
+                    getVimeoPreviewUrl(videoId, function (url) {
                         $preview.css('background-image', 'url("' + url + '")').show();
                     });
 
@@ -166,12 +166,12 @@
             });
 
             // pause YTPlayer/vimeo_player in hidden slides, apply some css rules
-            $(this).on('slide.bs.carousel', 'section.carousel', function(event) {
-                $(event.target).find('.carousel-item.active .mb_YTPlayer').each(function() {
+            $(this).on('slide.bs.carousel', 'section.carousel', function (event) {
+                $(event.target).find('.carousel-item.active .mb_YTPlayer').each(function () {
                     $(this).YTPPause();
                 });
 
-                $(event.target).find('.carousel-item.active .vimeo_player').each(function() {
+                $(event.target).find('.carousel-item.active .vimeo_player').each(function () {
                     $(this).v_pause();
                 });
 
@@ -179,12 +179,12 @@
             });
 
             // start YTPPlayer in active slides, apply some css rules
-            $(this).on('slid.bs.carousel', 'section.carousel', function(event) {
-                $(event.target).find('.carousel-item.active .mb_YTPlayer').each(function() {
+            $(this).on('slid.bs.carousel', 'section.carousel', function (event) {
+                $(event.target).find('.carousel-item.active .mb_YTPlayer').each(function () {
                     $(this).YTPPlay();
                 });
 
-                $(event.target).find('.carousel-item.active .vimeo_player').each(function() {
+                $(event.target).find('.carousel-item.active .vimeo_player').each(function () {
                     $(this).v_play();
                 });
 
