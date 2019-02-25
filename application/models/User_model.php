@@ -26,19 +26,7 @@ class User_model extends CI_Model {
   }
 
   public function form_update($data) {
-    $update_data = array(
-      'username' => $data['username']
-    );
-
-    if(isset($data['password']))
-    {
-      if($data['password'] != null)
-      {
-        $update_data['password'] = $data['password'];
-      }
-    }
-
-    $this->db->update('usuarios',$update_data,array('id' => $data['id']));
+    $this->db->update('usuarios',$data,array('id' => $data['id']));
     return $this->db->affected_rows();
   }
 

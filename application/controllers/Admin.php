@@ -12,13 +12,12 @@ class Admin extends CI_Controller {
   public function index()
   {
     if (!$this->session->has_userdata('is_authenticated')) {
-
-      var_dump($this->session->userdata());
-      $this->load->view('admin/login');
+    	$this->load->view('admin/login');
     }
     else
     {
-      $this->load->view('admin/home');
+      $data = array('content' => 'admin/home');
+		  $this->load->view('admin/template',$data);
     }
   }
 
@@ -46,7 +45,17 @@ class Admin extends CI_Controller {
       }
       redirect('admin');
     } else {
-      redirect('admin/login?msg=1');
+      redirect('admin/?msg=1');
     }
   }
+
+	public function logout() {
+		$this->session->unset_userdata('id');
+		$this->session->unset_userdata('username');
+		$this->session->unset_userdata('is_authenticated');
+		$this->session->sess_destroy();
+		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
+		$this->output->set_header("Pragma: no-cache");
+		redirect('admin');
+	}
 }
