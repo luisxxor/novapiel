@@ -41,7 +41,7 @@
           Usuarios
         </a>
 
-        <a class="navbar-item">
+        <a href="<?PHP echo base_url('servicio'); ?>" class="navbar-item">
           Servicios
         </a>
 
