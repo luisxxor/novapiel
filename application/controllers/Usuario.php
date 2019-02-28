@@ -39,7 +39,7 @@ class Usuario extends CI_Controller {
     {
       $result = $this->user->form_insert($data);
 
-      if($result > 0)
+      if($result['code'] == 0)
       {
         echo json_encode(['status' => '201', 'message' => 'Usuario creado exitosamente']);
       }
@@ -72,7 +72,7 @@ class Usuario extends CI_Controller {
 
     $result = $this->user->form_update($update_data);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '200', 'message' => 'Usuario actualizado exitosamente']);
     }
@@ -92,7 +92,7 @@ class Usuario extends CI_Controller {
 
     $result = $this->user->delete($id);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '200', 'message' => 'Usuario eliminado correctamente']);
     }

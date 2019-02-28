@@ -7,18 +7,18 @@ class Service_model extends CI_Model {
       'price' => $data['price'],
       'description' => $data['description']
     ));
-    return $this->db->affected_rows();
+    return $this->db->error();
   }
 
   public function form_update($data) {
     $this->db->update('servicios',$data,array('id' => $data['id']));
-    return $this->db->affected_rows();
+    return $this->db->error();
   }
 
   public function delete($id) {
     $this->db->where('id', $id);
     $this->db->delete('servicios');
-    return $this->db->affected_rows();
+    return $this->db->error();
   }
 
   public function getAll() {

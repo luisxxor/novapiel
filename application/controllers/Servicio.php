@@ -14,6 +14,7 @@ class Servicio extends CI_Controller {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       redirect('admin');
     }
+    
     $data = array('content' => 'admin/servicio/index');
     $this->load->view('admin/template',$data);
   }
@@ -35,7 +36,7 @@ class Servicio extends CI_Controller {
 
     $result = $this->service->form_insert($data);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '201', 'message' => 'Servicio creado exitosamente']);
     }
@@ -55,7 +56,7 @@ class Servicio extends CI_Controller {
 
     $result = $this->service->form_update($data);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '200', 'message' => 'Servicio actualizado exitosamente']);
     }
@@ -75,7 +76,7 @@ class Servicio extends CI_Controller {
 
     $result = $this->service->delete($id);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '200', 'message' => 'Servicio eliminado correctamente']);
     }

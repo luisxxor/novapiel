@@ -65,79 +65,83 @@
       -->
 
       <div id="modalForm" class="modal" :class="formDialog ? 'is-active' : ''">
-        <div @click="formDialog = false" class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p v-cloak class="modal-card-title">{{ formTitle }}</p>
-            <button @click="formDialog = false" class="delete" aria-label="close"></button>
-          </header>
-          <section class="modal-card-body">
-            <form class="form" @submit="save">
-              <div class="field">
-                <p class="control has-icons-left">
-                  <input
-                    class="input"
-                    :class="errors.items.find(val => val.field == 'username') != undefined ? 'is-danger' : ''"
-                    v-model="form.username"
-                    id="username"
-                    type="text"
-                    name="username"
-                    placeholder="Nombre de usuario"
-                    v-validate="'required|isUsernameAvailable'"  
-                  />
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                  </span>
-                </p>
-              </div>
-              <p class="mb-3">{{ errors.first('username') }}</p>
-              <div class="field">
-                <p class="control has-icons-left has-icons-right">
-                  <input
-                    :type="showPassword ? 'text' : 'password'"
-                    class="input"
-                    :class="errors.items.find(val => val.field == 'password') != undefined ? 'is-danger' : ''"
-                    v-model="form.password"
-                    id="password"
-                    name="password"
-                    placeholder="Contraseña"
-                    :v-validate="editmode ? '' : 'required'"  
-                  >
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-lock"></i>
-                  </span>
-                  <span
-                    class="icon is-small is-right"
-                    v-show="showPassword"
-                    @click="showPassword = !showPassword"
-                    style="pointer-events: initial; cursor: pointer;"
-                  >
-                    <i class="class fas fa-eye-slash"></i>
-                  </span>
-                  <span
-                    class="icon is-small is-right"
-                    v-show="!showPassword"
-                    @click="showPassword = !showPassword"
-                    style="pointer-events: initial; cursor: pointer;"
-                  >
-                    <i class="class fas fa-eye"></i>
-                  </span>
-                </p>
-              </div>
-              <span>{{ errors.first('password') }}</span>
-              <article class="message is-small is-warning" v-if="this.editmode">
-                <div class="message-body">
-                  Si dejas el campo contraseña vacío, no se actualizará la contraseña y se dejará la anterior.<br>
-                  Si introduces algo en el campo contraseña reemplazarás la contraseña anterior.
+        <transition name="fade">
+          <div @click="formDialog = false" class="modal-background" v-show="formDialog"></div>
+        </transition>
+        <transition name="bounce">
+          <div class="modal-card" v-show="formDialog">
+            <header class="modal-card-head">
+              <p v-cloak class="modal-card-title">{{ formTitle }}</p>
+              <button @click="formDialog = false" class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+              <form class="form" @submit="save">
+                <div class="field">
+                  <p class="control has-icons-left">
+                    <input
+                      class="input"
+                      :class="errors.items.find(val => val.field == 'username') != undefined ? 'is-danger' : ''"
+                      v-model="form.username"
+                      id="username"
+                      type="text"
+                      name="username"
+                      placeholder="Nombre de usuario"
+                      v-validate="'required|isUsernameAvailable'"  
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-user"></i>
+                    </span>
+                  </p>
+                  <p class="help is-danger">{{ errors.first('username') }}</p>
                 </div>
-              </article>
-            </form>
-          </section>
-          <footer class="modal-card-foot">
-            <button @click="save" :disabled="invalidForm" class="button is-primary">Aceptar</button>
-            <button @click="formDialog = false" class="button">Cancelar</button>
-          </footer>
-        </div>
+                <div class="field">
+                  <p class="control has-icons-left has-icons-right">
+                    <input
+                      :type="showPassword ? 'text' : 'password'"
+                      class="input"
+                      :class="errors.items.find(val => val.field == 'password') != undefined ? 'is-danger' : ''"
+                      v-model="form.password"
+                      id="password"
+                      name="password"
+                      placeholder="Contraseña"
+                      :v-validate="editmode ? '' : 'required'"  
+                    >
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                    <span
+                      class="icon is-small is-right"
+                      v-show="showPassword"
+                      @click="showPassword = !showPassword"
+                      style="pointer-events: initial; cursor: pointer;"
+                    >
+                      <i class="class fas fa-eye-slash"></i>
+                    </span>
+                    <span
+                      class="icon is-small is-right"
+                      v-show="!showPassword"
+                      @click="showPassword = !showPassword"
+                      style="pointer-events: initial; cursor: pointer;"
+                    >
+                      <i class="class fas fa-eye"></i>
+                    </span>
+                  </p>
+                  <p class="help is-danger">{{ errors.first('password') }}</p>
+                </div>
+                <article class="message is-small is-warning" v-if="this.editmode">
+                  <div class="message-body">
+                    Si dejas el campo contraseña vacío, no se actualizará la contraseña y se dejará la anterior.<br>
+                    Si introduces algo en el campo contraseña reemplazarás la contraseña anterior.
+                  </div>
+                </article>
+              </form>
+            </section>
+            <footer class="modal-card-foot">
+              <button @click="save" :disabled="invalidForm" class="button is-primary">Aceptar</button>
+              <button @click="formDialog = false" class="button">Cancelar</button>
+            </footer>
+          </div>
+        </transition>
       </div>
     </div>
   </section>

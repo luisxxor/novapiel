@@ -12,6 +12,10 @@
     [v-cloak] {
       display: none;
     }
+
+    html {
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -43,6 +47,10 @@
 
         <a href="<?PHP echo base_url('servicio'); ?>" class="navbar-item">
           Servicios
+        </a>
+
+        <a href="<?PHP echo base_url('cliente'); ?>" class="navbar-item">
+          Clientes
         </a>
 
         <a class="navbar-item">
@@ -83,5 +91,59 @@
       })
     })
   </script>
+  <style>
+   
+    .bounce-enter {
+      transform: scale(0);
+    }
+
+    .bounce-leave {
+      transform: scale(1);
+    }
+
+    .bounce-enter-active {
+      animation: .3s bounce-in;
+    }
+
+    .bounce-leave-active {
+      animation: .3s bounce-in reverse;
+    }
+
+    .modal.is-active {
+      transition: .3s all;
+      visibility: visible;
+    }
+
+    .modal {
+      transition: .3s all;
+      display: flex!important;
+      visibility: hidden;
+    }
+
+    .fade-enter {
+      opacity: 0;
+    }
+
+    .fade-enter-active, .fade-leave-active {
+      transition: .3s ease opacity;
+    }
+
+    .fade-enter-to, .fade-leave{
+      opacity: 1;
+    }
+
+    .fade-leave-to {
+      opacity: 0;
+    }
+
+    @keyframes bounce-in {
+      0% {
+        transform: scale(0);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
 </body>
 </html>

@@ -52,3 +52,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'landing_page';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['botox'] = 'servicios/botox';
+$route['peeling_facial'] = 'servicios/peeling_facial';
+$route['prp'] = 'servicios/prp';
+$route['mesoterapia_facial'] = 'servicios/mesoterapia_facial';
+$route['hilos_revitalizantes'] = 'servicios/hilos_revitalizantes';

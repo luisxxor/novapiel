@@ -68,29 +68,29 @@
             </a>
             <div class="dropdown-menu">
               <a class="text-black dropdown-item display-4"
-                href="<?PHP echo base_url('servicios/botox'); ?>"
+                href="<?PHP echo base_url('botox'); ?>"
                 aria-expanded="false">
                 BOTOX
               </a>
               <a
                 class="text-black dropdown-item display-4"
-                href="<?PHP echo base_url('servicios/peeling_facial'); ?>"
+                href="<?PHP echo base_url('peeling_facial'); ?>"
                 aria-expanded="false"
               >
                 PEELING FACIAL
               </a>
               <a class="text-black dropdown-item display-4"
-                href="<?PHP echo base_url('servicios/prp'); ?>" aria-expanded="false"
+                href="<?PHP echo base_url('prp'); ?>" aria-expanded="false"
               >
                 PLASMA RICO EN PLAQUETAS
               </a>
               <a class="text-black dropdown-item display-4"
-                href="<?PHP echo base_url(); ?>"
+                href="<?PHP echo base_url('hilos_revitalizantes'); ?>"
                 aria-expanded="false">
                 HILOS REVITALIZANTES
               </a>
               <a class="text-black dropdown-item display-4"
-                href="<?PHP echo base_url('servicios/mesoterapia_facial'); ?>"
+                href="<?PHP echo base_url('mesoterapia_facial'); ?>"
                 aria-expanded="false"
               >
                 MESOTERAPIA FACIAL
@@ -138,9 +138,9 @@
           <p class="mbr-text">
             <strong>Links</strong>
             <br>
-            <br><strong><a href="<?PHP echo base_url('servicios/botox'); ?>">Botox</a></strong><br><a href="<?PHP echo base_url('servicios/prp'); ?>">Plasma Rico en
-              Plaquetas</a><br><a href="<?PHP echo base_url('servicios/mesoterapia_facial'); ?>">Mesoterapia Facial</a><br><a
-              href="<?PHP echo base_url('servicios/hilos_revitalizantes'); ?>">Hilos Revitalizantes</a><br><a href="<?PHP echo base_url('servicios/peeling_facial'); ?>">Peeling
+            <br><strong><a href="<?PHP echo base_url('botox'); ?>">Botox</a></strong><br><a href="<?PHP echo base_url('prp'); ?>">Plasma Rico en
+              Plaquetas</a><br><a href="<?PHP echo base_url('mesoterapia_facial'); ?>">Mesoterapia Facial</a><br><a
+              href="<?PHP echo base_url('hilos_revitalizantes'); ?>">Hilos Revitalizantes</a><br><a href="<?PHP echo base_url('peeling_facial'); ?>">Peeling
               Quimico</a><br><br>
             <br><strong>Feedback</strong>
             <br>

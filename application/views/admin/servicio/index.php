@@ -6,7 +6,7 @@
 <div id="app">
   <section>
     <div class="container">
-      <h2 id="title" class="title is-2 has-text-centered">Listado de Servicios</h2>
+      <h2 id="pageTitle" class="title is-2 has-text-centered">Listado de Servicios</h2>
       <button @click="formDialog = true" id="addServiceButton" class="button is-rounded">Añadir servicio</button>
 
       <div v-cloak class="card">
@@ -73,65 +73,75 @@
       -->
 
       <div id="modalForm" class="modal" :class="formDialog ? 'is-active' : ''">
-        <div @click="formDialog = false" class="modal-background"></div>
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p v-cloak class="modal-card-title">{{ formTitle }}</p>
-            <button @click="formDialog = false" class="delete" aria-label="close"></button>
-          </header>
-          <section class="modal-card-body">
-            <form class="form" @submit="save">
-              <div class="field">
-                <p class="control">
-                  <input
-                  class="input"
-                  :class="errors.items.find(val => val.field == 'title') != undefined ? 'is-danger' : ''"
-                  v-model="form.title"
-                  id="title"
-                  type="text"
-                  name="title"
-                  placeholder="Titulo del servicio"
-                  v-validate="'required'"  
-                  />
-                </p>
-              </div>
-              <p class="mb-3">{{ errors.first('title') }}</p>
-              <div class="field">
-                <p class="control">
-                  <input
-                  type="number"
-                  min="0"
-                  class="input"
-                  :class="errors.items.find(val => val.field == 'price') != undefined ? 'is-danger' : ''"
-                  v-model="form.price"
-                  id="price"
-                  name="price"
-                  placeholder="Contraseña"
-                  v-validate="'required|min_value:0'"  
-                  >
-                </p>
-              </div>
-              <p class="mb-3">{{ errors.first('price') }}</p>
-              <div class="field">
-                <div class="control">
-                  <textarea
-                    class="textarea has-fixed-size"
-                    :class="errors.items.find(val => val.field == 'description') != undefined ? 'is-danger' : ''"
-                    v-model="form.description"
-                    id="description"
-                    name="description"
-                    placeholder="Descripcion (opcional)"
-                  >
-                  </textarea>
+        <transition name="fade">
+          <div @click="formDialog = false" class="modal-background" v-show="formDialog"></div>
+        </transition>
+        <transition name="bounce">      
+          <div class="modal-card" v-show="formDialog">
+            <header class="modal-card-head">
+              <p v-cloak class="modal-card-title">{{ formTitle }}</p>
+              <button @click="formDialog = false" class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+              <form class="form" @submit="save">
+                <div class="field">
+                  <label for="title" class="label">Título</label>
+                  <p class="control">
+                    <input
+                    class="input"
+                    :class="errors.items.find(val => val.field == 'title') != undefined ? 'is-danger' : ''"
+                    v-model="form.title"
+                    id="title"
+                    type="text"
+                    name="title"
+                    placeholder="Titulo del servicio"
+                    v-validate="'required'"  
+                    />
+                  </p>
+                  <p class="help is-danger">{{ errors.first('title') }}</p>
                 </div>
-              </div>
-            </form>
-          </section>
-          <footer class="modal-card-foot">
-            <button @click="save" :disabled="invalidForm" class="button is-primary">Aceptar</button>
-            <button @click="formDialog = false" class="button">Cancelar</button>
-          </footer>
-        </div>
+                <div class="field">
+                  <label for="price" class="label">Precio</label>
+                  <p class="control has-icons-left">
+                    <input
+                    type="number"
+                    min="0"
+                    class="input"
+                    :class="errors.items.find(val => val.field == 'price') != undefined ? 'is-danger' : ''"
+                    v-model="form.price"
+                    id="price"
+                    name="price"
+                    placeholder="Precio"
+                    v-validate="'required|min_value:0'"  
+                    >
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-dollar-sign"></i>
+                    </span>
+                  </p>
+                  <p class="help is-danger">{{ errors.first('price') }}</p>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <label for="description" class="label">Descripción</label>
+                    <textarea
+                      class="textarea has-fixed-size"
+                      :class="errors.items.find(val => val.field == 'description') != undefined ? 'is-danger' : ''"
+                      v-model="form.description"
+                      id="description"
+                      name="description"
+                      placeholder="Descripcion (opcional)"
+                    >
+                    </textarea>
+                  </div>
+                </div>
+              </form>
+            </section>
+            <footer class="modal-card-foot">
+              <button @click="save" :disabled="invalidForm" class="button is-primary">Aceptar</button>
+              <button @click="formDialog = false" class="button">Cancelar</button>
+            </footer>
+          </div>
+        </transition>
       </div>
     </div>
   </section>
@@ -142,10 +152,11 @@
   const dict = {
   custom: {
     title: {
-      required: 'El nombre de usuario es requerido'
+      required: 'El nombre del servicio es requerido'
     },
     price: {
-      min_value: 'No se permiten números negativos'
+      min_value: 'No se permiten números negativos',
+      decimal: 'Solo se permiten números enteros'
     }
   }
   };
@@ -323,15 +334,15 @@
 </script>
 
 <style>
-  #title {
-  margin-top: 1em;
+  #pageTitle {
+    margin-top: 1em;
   }
 
   #addServiceButton {
-  margin-bottom: 1em;
+    margin-bottom: 1em;
   }
 
   .clickable {
-  cursor: pointer;
+    cursor: pointer;
   }
 </style>

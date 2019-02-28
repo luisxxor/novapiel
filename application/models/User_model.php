@@ -22,19 +22,19 @@ class User_model extends CI_Model {
       'username' => $data['username'],
       'password' => $data['password']
     ));
-    return $this->db->affected_rows();
+    return $this->db->error();
   }
 
   public function form_update($data) {
     $this->db->update('usuarios',$data,array('id' => $data['id']));
-    return $this->db->affected_rows();
+    return $this->db->error();
   }
 
   public function delete($id) {
     $this->db->where('id', $id);
     $this->db->delete('usuarios');
 
-    return $this->db->affected_rows();
+    return $this->db->error();
   }
 
   public function getUserInfo() {

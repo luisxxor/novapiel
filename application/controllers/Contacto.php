@@ -15,6 +15,11 @@ class Contacto extends CI_Controller {
     $this->load->view('contacto/formulario');
 	}
 
+  public function admin()
+  {
+    $this->load->view('admin/contacto/index');
+  }
+
   public function procesarFormularioContacto()
   {
     $data = array();
