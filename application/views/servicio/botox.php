@@ -66,15 +66,12 @@
             <div class="plan col-12 mx-2 my-2 justify-content-center col-lg-3">
                 <div class="plan-header text-center pt-5">
                     <h3 class="plan-title mbr-fonts-style display-5">
-                        Entrecejo + Frente + Patas de Gallo</h3>
+                        2 Zonas</h3>
                     <div class="plan-price">
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
-                        <span class="price-figure mbr-fonts-style display-2">249.990</span>
-                        <small class="price-term mbr-fonts-style display-7">
-                            Por sesión
-                        </small>
+                        <span class="price-figure mbr-fonts-style display-2">130.000</span>
                     </div>
                 </div>
                 <div class="plan-body pb-5">
@@ -90,14 +87,12 @@
             <div class="plan col-12 mx-2 my-2 justify-content-center col-lg-3">
                 <div class="plan-header text-center pt-5">
                     <h3 class="plan-title mbr-fonts-style display-5">
-                        Entrecejo + Frente</h3>
+                        3 Zonas</h3>
                     <div class="plan-price">
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
-                        <span class="price-figure mbr-fonts-style display-2">189.990</span>
-                        <small class="price-term mbr-fonts-style display-7">
-                            <br>Por sesión<br><br></small>
+                        <span class="price-figure mbr-fonts-style display-2">200.000</span>
                     </div>
                 </div>
                 <div class="plan-body pb-5">
@@ -107,53 +102,6 @@
                     <div class="mbr-section-btn text-center pt-4"><a href="<?PHP echo base_url('contacto'); ?>"
                                                                      class="btn btn-primary display-4">Solicitar
                             Evaluación</a></div>
-                </div>
-            </div>
-
-            <div class="plan col-12 mx-2 my-2 justify-content-center col-lg-3">
-                <div class="plan-header text-center pt-5">
-                    <h3 class="plan-title mbr-fonts-style display-5">
-                        Frente</h3>
-                    <div class="plan-price">
-                        <span class="price-value mbr-fonts-style display-5">
-                            $
-                        </span>
-                        <span class="price-figure mbr-fonts-style display-2">
-                            120.000</span>
-                        <small class="price-term mbr-fonts-style display-7">Por sesión<br><br></small>
-                    </div>
-                </div>
-                <div class="plan-body pb-5">
-                    <div class="plan-list align-center">
-                        <ul class="list-group list-group-flush mbr-fonts-style display-7"></ul>
-                    </div>
-                    <div class="mbr-section-btn text-center pt-4"><a href="<?PHP echo base_url('contacto'); ?>"
-                                                                     class="btn btn-primary display-4">Solicitar
-                            Evaluación</a></div>
-                </div>
-            </div>
-
-            <div class="plan col-12 mx-2 my-2 justify-content-center col-lg-3">
-                <div class="plan-header text-center pt-5">
-                    <h3 class="plan-title mbr-fonts-style display-5">Patas de Gallo + Frente</h3>
-                    <div class="plan-price">
-                        <span class="price-value mbr-fonts-style display-5">
-                            $
-                        </span>
-                        <span class="price-figure mbr-fonts-style display-2">
-                            190.000</span>
-                        <small class="price-term mbr-fonts-style display-7">
-                            Por sesión
-                        </small>
-                    </div>
-                </div>
-                <div class="plan-body pb-5">
-                    <div class="plan-list align-center">
-                        <ul class="list-group list-group-flush mbr-fonts-style display-7"></ul>
-                    </div>
-                    <div class="mbr-section-btn text-center pt-4"><a href="<?PHP echo base_url('contacto'); ?>"
-                                                                     class="btn btn-primary display-4">Solicitar
-                            Evalución</a></div>
                 </div>
             </div>
         </div>

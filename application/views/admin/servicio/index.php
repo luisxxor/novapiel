@@ -1,5 +1,20 @@
 <link rel="stylesheet" href="<?PHP echo base_url('assets/bulma/bulma-tooltip.min.css'); ?>">
 <link rel="stylesheet" href="<?PHP echo base_url('assets/animate/animate.css'); ?>">
+
+<style>
+  #pageTitle {
+    margin-top: 1em;
+  }
+
+  #addServiceButton {
+    margin-bottom: 1em;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.33.1/dist/sweetalert2.all.min.js" integrity="sha256-Qfxgn9jULeGAdbaeDjXeIhZB3Ra6NCK3dvjwAG8Y+xU=" crossorigin="anonymous"></script>
@@ -7,7 +22,7 @@
   <section>
     <div class="container">
       <h2 id="pageTitle" class="title is-2 has-text-centered">Listado de Servicios</h2>
-      <button @click="formDialog = true" id="addServiceButton" class="button is-rounded">Añadir servicio</button>
+      <button @click="formDialog = true; errors.clear();" id="addServiceButton" class="button is-rounded">Añadir servicio</button>
 
       <div v-cloak class="card">
         <div v-cloak class="card-content">
@@ -192,6 +207,7 @@
     methods: {
       editItem(index)
       {
+        this.errors.clear();
         this.form = Object.assign({},this.services[index]);
         this.formDialog = true;
         this.editmode = true;
@@ -245,71 +261,73 @@
         })
       },
       close() {
-      this.form = {
-        id: null,
-        title: '',
-        price: 0,
-        description: ''
-      }
       setTimeout(() => {
         this.editmode = false;
         this.errors.clear();
+        this.form = {
+          id: null,
+          title: '',
+          price: 0,
+          description: ''
+        }
       }, 300);
       },
-      save(e) {
-        e.preventDefault()
+      save() {
         this.$validator.validate().then(result => {
-          let data = new FormData();
-          data.append('service_form',JSON.stringify(this.form));
-          if(!this.editmode)
-          {            
-            axios.post('servicio/create',data)
-            .then(response => {
-              if(response.data.status == 201)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Ha creado el servicio correctamente'
-                })
-                this.formDialog  = false;
-                this.loadServices();
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
-          }
-          else
+          if(result)
           {
-            axios.post('servicio/update',data)
-            .then(response => {
-              if(response.data.status == 200)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Servicio actualizado correctamente'
-                });
-                this.formDialog = false;
-                this.loadServices();
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
+            let data = new FormData();
+            data.append('service_form',JSON.stringify(this.form));
+            if(!this.editmode)
+            {            
+              axios.post('servicio/create',data)
+              .then(response => {
+                if(response.data.status == 201)
+                {
+                  Swal.fire({
+                    type: 'success',
+                    title: 'Exito!',
+                    text: 'Ha creado el servicio correctamente'
+                  })
+                  this.formDialog  = false;
+                  this.loadServices();
+                  this.close();
+                }
+                else
+                {
+                  Swal.fire({
+                    type: 'error',
+                    title: 'Lo sentimos',
+                    text: 'Ha ocurrido un error'
+                  })
+                }
+              })
+            }
+            else
+            {
+              axios.post('servicio/update',data)
+              .then(response => {
+                if(response.data.status == 200)
+                {
+                  Swal.fire({
+                    type: 'success',
+                    title: 'Exito!',
+                    text: 'Servicio actualizado correctamente'
+                  });
+                  this.formDialog = false;
+                  this.loadServices();
+                  this.close();
+                }
+                else
+                {
+                  Swal.fire({
+                    type: 'error',
+                    title: 'Lo sentimos',
+                    text: 'Ha ocurrido un error'
+                  })
+                }
+              })
+            }
           }
         });
       },
@@ -332,17 +350,3 @@
     }
   })
 </script>
-
-<style>
-  #pageTitle {
-    margin-top: 1em;
-  }
-
-  #addServiceButton {
-    margin-bottom: 1em;
-  }
-
-  .clickable {
-    cursor: pointer;
-  }
-</style>

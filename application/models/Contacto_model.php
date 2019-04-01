@@ -1,24 +1,24 @@
 <?php
 
-class Contacto_model extends CI_Model {
+  class Contacto_model extends CI_Model {
 
     function __construct()
     {
-        parent::__construct();
+      parent::__construct();
     }
 
-    function get_todos(){
+    public function getAll() {
+      $this->db->select('*');
+      $this->db->from('contacto');
+      $query = $this->db->get();
+      $result = $query->result();
+      return $result;
+    }
 
-    	$this->load->database();
-
-    	$query = $this->db->get('contacto');
-    	return $query->result();
-	}
-
-	function create($data) {
+     function create($data) {
       $this->db->insert('contacto', $data);
       return $this->db->affected_rows();
     }
 
-}
+  }
 ?>

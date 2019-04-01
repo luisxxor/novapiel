@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="<?PHP echo base_url('assets/images/sin-ttulo-1-276x235.png'); ?>"
           type="image/x-icon">
     <meta name="description" content="contactanos">
-    <title>contactanos</title>
+    <title>Novapiel - Contáctanos</title>
     <link rel="stylesheet" href="<?PHP echo base_url('assets/web/assets/mobirise-icons/mobirise-icons.css') ?>">
     <link rel="stylesheet" href="<?PHP echo base_url('assets/tether/tether.min.css') ?>">
     <link rel="stylesheet" href="<?PHP echo base_url('assets/soundcloud-plugin/style.css') ?>">
@@ -138,7 +138,7 @@
                                   id="message-form1-2b"></textarea>
                     </div>
 
-                    <input type="submit" value="Enviar mensaje">
+                    <input type="submit" value="Enviar mensaje" class="btn btn-primary">
                 </form>
             </div>
         </div>

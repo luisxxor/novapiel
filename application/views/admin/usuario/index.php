@@ -104,7 +104,7 @@
                       id="password"
                       name="password"
                       placeholder="Contraseña"
-                      :v-validate="editmode ? '' : 'required'"  
+                      v-validate="requiredIfNew"  
                     >
                     <span class="icon is-small is-left">
                       <i class="fas fa-lock"></i>
@@ -186,6 +186,9 @@
       },
       formTitle() {
         return this.editmode ? 'Editar usuario' : 'Crear usuario'
+      },
+      requiredIfNew() {
+        return this.editmode ? '' : 'required'
       }
     },
     methods: {
@@ -255,62 +258,63 @@
           this.errors.clear();
         }, 300);
       },
-      save(e) {
-        e.preventDefault()
+      save() {
 
         this.$validator.validate().then(result => {
-        
-          let data = new FormData();
-          data.append('user_form',JSON.stringify(this.form));
-          if(!this.editmode)
-          {            
-            axios.post('usuario/create',data).
-            then(response => {
-              if(response.data.status == 201)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Ha creado al usuario correctamente'
-                })
-                this.formDialog  = false;
-                this.loadUsers();
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
-          }
-          else
+          if(result)
           {
-            axios.post('usuario/update',data).
-            then(response => {
-              if(response.data.status == 200)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Usuario actualizado correctamente'
-                });
-                this.formDialog = false;
-                this.loadUsers();
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
+            let data = new FormData();
+            data.append('user_form',JSON.stringify(this.form));
+            if(!this.editmode)
+            {            
+              axios.post('usuario/create',data).
+              then(response => {
+                if(response.data.status == 201)
+                {
+                  Swal.fire({
+                    type: 'success',
+                    title: 'Exito!',
+                    text: 'Ha creado al usuario correctamente'
+                  })
+                  this.formDialog  = false;
+                  this.loadUsers();
+                  this.close();
+                }
+                else
+                {
+                  Swal.fire({
+                    type: 'error',
+                    title: 'Lo sentimos',
+                    text: 'Ha ocurrido un error'
+                  })
+                }
+              })
+            }
+            else
+            {
+              axios.post('usuario/update',data).
+              then(response => {
+                if(response.data.status == 200)
+                {
+                  Swal.fire({
+                    type: 'success',
+                    title: 'Exito!',
+                    text: 'Usuario actualizado correctamente'
+                  });
+                  this.formDialog = false;
+                  this.loadUsers();
+                  this.close();
+                }
+                else
+                {
+                  Swal.fire({
+                    type: 'error',
+                    title: 'Lo sentimos',
+                    text: 'Ha ocurrido un error'
+                  })
+                }
+              })
+            }
           }
         });
       },

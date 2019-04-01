@@ -15,7 +15,7 @@ class Cliente extends CI_Controller {
       redirect('admin');
     }
     
-    $data = array('content' => 'admin/cliente/index');
+    $data = array('content' => 'admin/cliente/index','title' => 'Novapiel - Clientes');
     $this->load->view('admin/template',$data);
   }
 
@@ -24,6 +24,12 @@ class Cliente extends CI_Controller {
     header('Content-Type: application/json');
     echo json_encode(['clients' => $data['clients']]);
 
+  }
+
+  function getClientsWithOrders() {
+    $data['clients'] = $this->client->getWithOrders();
+    header('Content-Type: application/json');
+    echo json_encode(['clients' => $data['clients']]);
   }
   
   public function create() {
@@ -36,7 +42,7 @@ class Cliente extends CI_Controller {
 
     $result = $this->client->form_insert($data);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '201', 'message' => 'Cliente creado exitosamente']);
     }
@@ -56,7 +62,7 @@ class Cliente extends CI_Controller {
 
     $result = $this->client->form_update($data);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '200', 'message' => 'Cliente actualizado exitosamente']);
     }
@@ -76,7 +82,7 @@ class Cliente extends CI_Controller {
 
     $result = $this->client->delete($id);
 
-    if($result > 0)
+    if($result['code'] == 0)
     {
       echo json_encode(['status' => '200', 'message' => 'Cliente eliminado correctamente']);
     }

@@ -15,7 +15,7 @@ class Servicio extends CI_Controller {
       redirect('admin');
     }
     
-    $data = array('content' => 'admin/servicio/index');
+    $data = array('content' => 'admin/servicio/index','title' => 'Novapiel - Servicios');
     $this->load->view('admin/template',$data);
   }
 

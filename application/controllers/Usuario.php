@@ -14,7 +14,7 @@ class Usuario extends CI_Controller {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       redirect('admin');
     }
-    $data = array('content' => 'admin/usuario/index');
+    $data = array('content' => 'admin/usuario/index','title' => 'Novapiel - Usuarios');
     $this->load->view('admin/template',$data);
   }
 

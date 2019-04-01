@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Novapiel</title>
+  <title><?PHP echo $title ?></title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
@@ -21,7 +21,7 @@
 <body>
   <nav class="navbar is-light" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <a class="navbar-item" href="<?PHP echo base_url('/'); ?>">
+      <a class="navbar-item" href="<?PHP echo base_url('/admin'); ?>">
         <img src="<?PHP echo base_url('assets/images/sin-ttulo-1-276x235.png'); ?>" alt="Novapiel">
       </a>
 
@@ -53,12 +53,12 @@
           Clientes
         </a>
 
-        <a class="navbar-item">
-          Contacto
+        <a class="navbar-item" href="<?PHP echo base_url('ventas'); ?>">
+          Ventas
         </a>
 
-        <a class="navbar-item">
-          Ventas
+        <a href="<?PHP echo base_url('configuracion') ?>" class="navbar-item">
+          Configuracion
         </a>
 
       </div>

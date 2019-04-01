@@ -145,7 +145,7 @@
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
-                        <span class="price-figure mbr-fonts-style display-2">79.990</span>
+                        <span class="price-figure mbr-fonts-style display-2">70.000</span>
                         <small class="price-term mbr-fonts-style display-7">
                             <br>por sesión
                         </small>
@@ -172,7 +172,7 @@
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-2">
-                            89.990</span>
+                            80.000</span>
                         <small class="price-term mbr-fonts-style display-7">
                             <br>por sesión
                         </small>
@@ -199,7 +199,7 @@
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-2">
-                            99.990</span>
+                            90.000</span>
                         <small class="price-term mbr-fonts-style display-7"><br>por sesión<br></small>
                     </div>
                 </div>
@@ -224,7 +224,7 @@
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-2">
-                            110.990</span>
+                            100.000</span>
                         <small class="price-term mbr-fonts-style display-7">
                             por sesión
                         </small>

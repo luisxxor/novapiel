@@ -71,7 +71,7 @@
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
-                        <span class="price-figure mbr-fonts-style display-2">299.990</span>
+                        <span class="price-figure mbr-fonts-style display-2">200.000</span>
                         <small class="price-term mbr-fonts-style display-7"><br>por sesión<br></small>
                     </div>
                 </div>
@@ -84,55 +84,6 @@
                             Evaluación</a></div>
                 </div>
             </div>
-
-            <div class="plan col-12 mx-2 my-2 justify-content-center col-lg-4">
-                <div class="plan-header text-center pt-5">
-                    <h3 class="plan-title mbr-fonts-style display-5">
-                        20 hilos</h3>
-                    <div class="plan-price">
-                        <span class="price-value mbr-fonts-style display-5">
-                            $
-                        </span>
-                        <span class="price-figure mbr-fonts-style display-2">199.990<br></span>
-                        <small class="price-term mbr-fonts-style display-7">
-                            por sesión
-                        </small>
-                    </div>
-                </div>
-                <div class="plan-body pb-5">
-                    <div class="plan-list align-center">
-                        <ul class="list-group list-group-flush mbr-fonts-style display-7"></ul>
-                    </div>
-                    <div class="mbr-section-btn text-center pt-4"><a href="<?PHP echo base_url('contacto'); ?>"
-                                                                     class="btn btn-primary display-4">Solicitar <br>Evaluación</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="plan col-12 mx-2 my-2 justify-content-center col-lg-4">
-                <div class="plan-header text-center pt-5">
-                    <h3 class="plan-title mbr-fonts-style display-5">
-                        10 hilos</h3>
-                    <div class="plan-price">
-                        <span class="price-value mbr-fonts-style display-5">
-                            $
-                        </span>
-                        <span class="price-figure mbr-fonts-style display-2">99.990</span>
-                        <small class="price-term mbr-fonts-style display-7">
-                            <br>por sesión
-                        </small>
-                    </div>
-                </div>
-                <div class="plan-body pb-5">
-                    <div class="plan-list align-center">
-                        <ul class="list-group list-group-flush mbr-fonts-style display-7"></ul>
-                    </div>
-                    <div class="mbr-section-btn text-center pt-4"><a href="<?PHP echo base_url('contacto'); ?>"
-                                                                     class="btn btn-primary display-4">Solicitar <br>Evaluación</a>
-                    </div>
-                </div>
-            </div>
-
 
         </div>
     </div>

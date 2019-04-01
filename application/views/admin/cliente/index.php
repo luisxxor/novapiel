@@ -166,13 +166,11 @@
                         <p class="control">
                           <input
                           class="input"
-                          :class="errors.items.find(val => val.field == 'ocupacion') != undefined ? 'is-danger' : ''"
                           v-model="form.ocupacion"
                           id="ocupacion"
                           type="text"
                           name="ocupacion"
-                          placeholder="Ocupación del cliente"
-                          v-validate="'required'"  
+                          placeholder="Ocupación del cliente" 
                           />
                         </p>
                         <p class="help is-danger">{{ errors.first('ocupacion') }}</p>
@@ -374,14 +372,16 @@
 <script>
   axios.defaults.baseURL = '<?PHP echo base_url(); ?>';
   const dict = {
-  custom: {
-    name: {
-      required: 'El nombre del cliente es requerido'
-    },
-    price: {
-      min_value: 'No se permiten números negativos'
+    custom: {
+      nombre: {
+        required: 'El nombre del cliente es requerido'
+      },
+      edad: {
+        min_value: 'La edad seleccionada no es válida',
+        numeric: 'El número introducido no es válido',
+        decimal: 'El número introducido no es válido'
+      }
     }
-  }
   };
   
   Vue.use(VeeValidate);
@@ -439,7 +439,8 @@
       }
     },
     methods: {
-      editItem(index){
+      editItem(index) {
+        this.errors.clear();
         this.form = Object.assign({},this.clients[index]);
 
         for(let [key, value] of Object.entries(this.form))
@@ -452,8 +453,7 @@
         this.formDialog = true;
         this.editmode = true;
       },
-      deleteItem(index)
-      {
+      deleteItem(index){
         Swal({
           title: '¿Estás seguro?',
           text: "¡El cliente será eliminado para siempre!",
@@ -501,96 +501,98 @@
         })
       },
       close() {
-        this.form = {
-          id: null,
-          nombre: '',
-          telefono: '',
-          email: '',
-          ocupacion: '',
-          hipertension: false,
-          diabetes: false,
-          dislipidemia: false,
-          hipotiroidismo: false,
-          cancer: false,
-          miastenia_gravis: false,
-          enfermedad_neurologica: false,
-          problemas_coagulacion: false,
-          enfermedad_autoinmune: false,
-          infarto_acc_vascular: false,
-          anticoagulantes: false,
-          aspirina: false,
-          antiinflamatorios: false,
-          corticoides: false,
-          relajantes_musculares: false,
-          antibioticos: false,
-          hormonas: false,
-          otro_medicamento: false,
-          embarazo: false,
-          lactancia: false,
-          alergia_huevo: false,
-          alergia_lactosa: false,
-          alergia_otro_medicamento: false
-        };
+        this.editmode = false;
         setTimeout(() => {
-          this.editmode = false;
-          this.errors.clear();          
+          this.form = {
+            id: null,
+            nombre: '',
+            telefono: '',
+            email: '',
+            ocupacion: '',
+            hipertension: false,
+            diabetes: false,
+            dislipidemia: false,
+            hipotiroidismo: false,
+            cancer: false,
+            miastenia_gravis: false,
+            enfermedad_neurologica: false,
+            problemas_coagulacion: false,
+            enfermedad_autoinmune: false,
+            infarto_acc_vascular: false,
+            anticoagulantes: false,
+            aspirina: false,
+            antiinflamatorios: false,
+            corticoides: false,
+            relajantes_musculares: false,
+            antibioticos: false,
+            hormonas: false,
+            otro_medicamento: false,
+            embarazo: false,
+            lactancia: false,
+            alergia_huevo: false,
+            alergia_lactosa: false,
+            alergia_otro_medicamento: false
+          };
           this.tab = 0;
+          this.errors.clear();
         }, 300);
       },
-      save(e) {
-        e.preventDefault()
+      save() {
         this.$validator.validate().then(result => {
-          let data = new FormData();
-          data.append('client_form',JSON.stringify(this.form));
-          if(!this.editmode)
-          {            
-            axios.post('cliente/create',data)
-            .then(response => {
-              if(response.data.status == 201)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Ha creado el cliente correctamente'
-                })
-                this.formDialog  = false;
-                this.loadClients();
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
-          }
-          else
+          if(result)
           {
-            axios.post('cliente/update',data)
-            .then(response => {
-              if(response.data.status == 200)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Cliente actualizado correctamente'
-                });
-                this.formDialog = false;
-                this.loadClients();
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
+            let data = new FormData();
+            data.append('client_form',JSON.stringify(this.form));
+            if(!this.editmode)
+            {            
+              axios.post('cliente/create',data)
+              .then(response => {
+                if(response.data.status == 201)
+                {
+                  Swal.fire({
+                    type: 'success',
+                    title: 'Exito!',
+                    text: 'Ha creado el cliente correctamente'
+                  })
+                  this.formDialog  = false;
+                  this.loadClients();
+                  this.close();
+                }
+                else
+                {
+                  Swal.fire({
+                    type: 'error',
+                    title: 'Lo sentimos',
+                    text: 'Ha ocurrido un error'
+                  })
+                }
+              })
+            }
+            else
+            {
+              axios.post('cliente/update',data)
+              .then(response => {
+                if(response.data.status == 200)
+                {
+                  Swal.fire({
+                    type: 'success',
+                    title: 'Exito!',
+                    text: 'Cliente actualizado correctamente'
+                  });
+                  this.formDialog = false;
+                  this.loadClients();
+                  this.close();
+                }
+                else
+                {
+                  Swal.fire({
+                    type: 'error',
+                    title: 'Lo sentimos',
+                    text: 'Ha ocurrido un error'
+                  })
+                }
+              })
+            }
           }
         });
       },
@@ -654,19 +656,19 @@
   }
 
   .slideLeft-enter-active {
-    animation: .3s slideLeftIn linear;
+    animation: .3s slideLeftIn ease-in-out;
   }
 
   .slideLeft-leave-active {
-    animation: .3s slideLeftOut linear;
+    animation: .3s slideLeftOut ease-in-out;
   }
 
   .slideRight-enter-active {
-    animation: .3s slideRightIn linear;
+    animation: .3s slideRightIn ease-in-out;
   }
 
   .slideRight-leave-active {
-    animation: .3s slideRightOut linear;
+    animation: .3s slideRightOut ease-in-out;
   }
 
   @keyframes slideLeftOut {

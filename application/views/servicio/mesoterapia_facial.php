@@ -79,15 +79,15 @@
             <div class="plan col-12 mx-2 my-2 justify-content-center">
                 <div class="plan-header text-center pt-5">
                     <h3 class="plan-title mbr-fonts-style display-5">
-                        Rostro Completo</h3>
+                        Mesoterapia Facial + Limpieza</h3>
                     <div class="plan-price">
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-1">
-                              99.990</span>
+                              80.000</span>
                         <small class="price-term mbr-fonts-style display-7">
-                            por sesión
+                            En adelante
                         </small>
                     </div>
                 </div>

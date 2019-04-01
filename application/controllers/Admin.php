@@ -16,7 +16,7 @@ class Admin extends CI_Controller {
     }
     else
     {
-      $data = array('content' => 'admin/home');
+      $data = array('content' => 'admin/home', 'title' => 'Novapiel - Admin Panel');
 		  $this->load->view('admin/template',$data);
     }
   }

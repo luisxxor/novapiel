@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
   <link rel="shortcut icon" href="assets/images/sin-ttulo-1-276x235.png" type="image/x-icon">
   <meta name="description" content="">
-  <title>Home</title>
+  <title><?PHP echo $title ? $title : 'Novapiel' ?></title>
   <link rel="stylesheet" href="<?PHP echo base_url('assets/web/assets/mobirise-icons/mobirise-icons.css'); ?>">
   <link rel="stylesheet" href="<?PHP echo base_url('assets/tether/tether.min.css'); ?>">
   <link rel="stylesheet" href="<?PHP echo base_url('assets/soundcloud-plugin/style.css'); ?>">

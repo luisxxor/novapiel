@@ -172,7 +172,7 @@
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
-                        <span class="price-figure mbr-fonts-style display-1">55.000</span>
+                        <span class="price-figure mbr-fonts-style display-1">35.000</span>
                         <small class="price-term mbr-fonts-style display-7">
                             por sesión
                         </small>
