@@ -44,11 +44,11 @@
         if(user && pass)
         {
           event.preventDefault();
-          grecaptcha.execute();
+          sendForm()
         }
       }
 
-      function sendForm(token) {
+      function sendForm() {
         const $form = document.getElementById("login_form");
         form.submit();
       }
@@ -83,17 +83,11 @@
         return pass_is_valid;
       }
 
-      function hideMessage() {
-        document.querySelector('.message').style.display = "none";
-      }
-
       window.addEventListener('load',function() {
         document.getElementById('username').addEventListener('input',checkUser);
         document.getElementById('password').addEventListener('input',checkPass);
       });
     </script>
-
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
   <section class="section">
@@ -129,21 +123,9 @@
                           Usuario y/o contraseña incorrectos.
                         </div>
                       </article>
-                    <?PHP elseif($_GET['msg'] == 2): ?>
-                      <article class="message is-danger">
-                        <div class="message-body">
-                          Error con el Re-captcha.
-                        </div>
-                      </article>
                     <?PHP endif; ?>
                   <?PHP endif; ?>
 
-                  <div class="g-recaptcha"
-                    data-sitekey="6LdXvJsUAAAAAAX91zwKh0J7QEaKbYF76eME_uto"
-                    data-callback="onSubmit"
-                    data-size="invisible">
-                  </div>
-                  <input type="hidden" id="captcha" name="captcha" value="">
                   <div class="field">
                     <div class="control">
                       <button class="button is-link">Iniciar sesión</button>
