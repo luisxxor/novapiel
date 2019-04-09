@@ -104,26 +104,18 @@
   <section>
     <div class="container">
       <h2 id="pageTitle" class="title is-2 has-text-centered">Listado de Ventas</h2>
+      <button @click="sessionsDialog = true" id="addOrderButton" class="button is-rounded">Añadir Venta</button>
       <div v-cloak class="card">
         <div v-cloak class="card-content">
           <div v-cloak class="content">    
             <table v-cloak class="table">
-              <thead v-cloak v-show="!clientsIsEmpty">
+              <thead v-cloak v-show="!ordersIsEmpty">
                 <tr v-cloak>
                   <th>
                     ID
                   </th>
                   <th>
-                    Nombre
-                  </th>
-                  <th>
-                    Edad
-                  </th>
-                  <th>
-                    Telefono
-                  </th>
-                  <th>
-                    Email
+                    Fecha
                   </th>
                   <th>
                     Acciones
@@ -131,27 +123,24 @@
                 </tr>
               </thead>
               <tbody v-cloak>
-                <tr v-cloak v-show="!clientsIsEmpty" v-for="(client,index) in clients">
-                  <td v-cloak>{{ client.id }}</td>
-                  <td v-cloak>{{ client.nombre }}</td>
-                  <td v-cloak>{{ client.edad }}</td>
-                  <td v-cloak>{{ client.telefono }}</td>
-                  <td v-cloak>{{ client.email }}</td>
+                <tr v-cloak v-show="!ordersIsEmpty" v-for="(order,index) in orders">
+                  <td v-cloak>{{ order.id }}</td>
+                  <td v-cloak>{{ order.fecha }}</td>
                   <td>
                     <div class="actionContainer">
                       <span
                       class="icon clickable tooltip"
                       data-tooltip="Ver ficha"
-                      @click="openClientFile(index)"
+                      @click="openOrder(index)"
                       >
                         <i class="fas fa-eye"></i>
                       </span>
                     </div>
                   </td>
                 </tr>
-                <tr v-show="clientsIsEmpty">
+                <tr v-show="ordersIsEmpty">
                   <td class="has-text-centered">
-                    Lo sentimos, no hay clientes registrados.
+                    Lo sentimos, no hay ventas registradas.
                   </td>
                 </tr>
               </tbody>
@@ -163,89 +152,6 @@
       <!--
       Modal
       -->
-      <div id="modalOrders" class="modal" :class="{'is-active': ordersDialog}">
-        <transition name="fade">
-          <div class="modal-background" v-show="ordersDialog"></div>
-        </transition>
-        <transition name="bounce">
-          <div class="modal-card" v-show="ordersDialog">
-            <header class="modal-card-head">
-              <p v-cloak class="modal-card-title">Ordenes del cliente</p>
-              <button @click="ordersDialog = false" class="delete" aria-label="close"></button>
-            </header>
-            <section class="modal-card-body" style="overflow-x: hidden;">
-              <b-message v-show="ordersNotSaved.length > 0" type="is-warning">
-                Ha creado órdenes de ventas y no ha guardado los cambios, haga click en ACEPTAR si desea añadir sesiones a una órden de venta recien creada.
-              </b-message>
-              <table class="table is-fullwidth">
-                <thead v-cloak v-show="!ordersIsEmpty">
-                  <tr v-cloak>
-                    <th>
-                      ID
-                    </th>
-                    <th>
-                      Fecha
-                    </th>
-                    <th>
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody v-cloak>
-                  <tr v-cloak v-show="!ordersIsEmpty" v-for="(order,index) in orders">
-                    <td v-cloak>{{ order.id ? order.id : '-' }}</td>
-                    <td v-cloak>
-                      <b-datepicker
-                        placeholder="Fecha"
-                        :date-formatter="(date) => dateToFront(date)"
-                        :date-parser="(date) => toDateobject(date)"
-                        icon="calendar"
-                        @input="date => order.fecha = dateToBd(date)"
-                        :value="toDateObject(order.fecha)"
-                        :month-names="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
-                        :day-names="['D','L','Ma','Mi','J','V','S']"
-                        :name="`order_date_${index}`"
-                        icon-pack="fa"
-                      >
-                      </b-datepicker>
-                    </td>
-                    <td>
-                      <div>
-                        <span
-                        class="icon clickable tooltip"
-                        data-tooltip="Ver sesiones"
-                        @click="openOrder(index)"
-                        v-if="order.id"
-                        >
-                          <i class="fas fa-eye"></i>
-                        </span>
-                        <span
-                        class="icon clickable tooltip"
-                        data-tooltip="Eliminar orden"
-                        @click="deleteOrder(index)"
-                        >
-                          <i class="fas fa-trash"></i>
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr v-show="ordersIsEmpty">
-                    <td class="has-text-centered">
-                      Lo sentimos, este cliente no tiene ordenes de venta registradas.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <button @click="newOrder" class="button">Añadir Orden</button>
-            </section>
-            <footer class="modal-card-foot">
-              <button @click="saveClientOrders" :disabled="invalidForm" class="button is-primary">Aceptar</button>
-              <button @click="ordersDialog = false" class="button">Cancelar</button>
-            </footer>
-          </div>
-        </transition>
-      </div>
 
       <div id="modalSessions" class="modal" :class="{'is-active': sessionsDialog}">
         <transition name="fade">
@@ -254,10 +160,38 @@
         <transition name="bounce">
           <div class="modal-card" v-show="sessionsDialog">
             <header class="modal-card-head">
-              <p v-cloak class="modal-card-title">Sesiones del cliente</p>
+              <p v-cloak class="modal-card-title">{{ sessionsDialogTitle }}</p>
               <button @click="sessionsDialog = false" class="delete" aria-label="close"></button>
             </header>
             <section class="modal-card-body" style="overflow-x: hidden;">
+              <b-field label="Cliente">
+                <b-autocomplete
+                  v-model="search"
+                  name="client_order"
+                  :data="filteredDataObj"
+                  @select="option => order.client_id = option.id"
+                  :open-on-focus="true"
+                  field="nombre"
+                  v-validate="'required'"
+                >
+                  <template slot="empty">No hay clientes que coincidan con su búsqueda.</template>
+                </b-autocomplete>
+              </b-field>
+              <p class="help is-danger" v-if="errors.first(`client_order`)">Debe seleccionar un cliente</p>
+              <b-field label="Fecha">              
+                <b-datepicker
+                  placeholder="Fecha"
+                  :date-formatter="(date) => dateToFront(date)"
+                  :date-parser="(date) => toDateobject(date)"
+                  icon="calendar"
+                  @input="date => order.fecha = dateToBd(date)"
+                  :value="toDateObject(order.fecha)"
+                  :month-names="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
+                  :day-names="['D','L','Ma','Mi','J','V','S']"
+                  icon-pack="fa"
+                >
+                </b-datepicker>
+              </b-field>
               <table class="table is-fullwidth">
                 <thead v-cloak v-show="!sessionsIsEmpty">
                   <tr v-cloak>
@@ -284,7 +218,8 @@
                       <div class="field">
                         <div class="select" :class="{'is-danger': errors.first(`service_select_${index}`)}">
                           <select :name="`service_select_${index}`" v-validate="'required'" v-model="session.servicio_id">
-                            <option :value="service.id" v-for="(service,service_index) in services">{{ service.title }}</option>
+                            <option v-if="services.length > 0" :value="service.id" v-for="(service,service_index) in services">{{ service.title }}</option>
+                            <option v-if="services.length == 0" value="">No hay servicios registrados.</option>
                           </select>
                         </div>
                         <p class="help is-danger" v-if="errors.first(`service_select_${index}`)">Debe seleccionar un servicio</p>
@@ -340,7 +275,7 @@
                   </tr>
                   <tr v-show="sessionsIsEmpty">
                     <td class="has-text-centered">
-                      Lo sentimos, el cliente no tiene sesiones registradas en esta orden de venta.
+                      Esta orden de venta está vacía.
                     </td>
                   </tr>
                 </tbody>
@@ -373,14 +308,17 @@
     data: {
       clients: [],
       orders: [],
-      client_id: null,
       client: null,
-      order_id: null,
+      order: {
+        id: null,
+        fecha: window.moment().format('YYYY-MM-DD'),
+        client_id: null
+      },
       sessions: [],
-      ordersDialog: false,
       sessionsDialog: false,
       editmode: false,
-      services: []
+      services: [],
+      search: ''
     },
     computed: {
       clientsIsEmpty() {
@@ -398,13 +336,21 @@
       sessionsIsEmpty() {
         return this.sessions.length == 0;
       },
-      ordersNotSaved() {
-        return this.orders.filter(val => !val.id)
+      sessionsDialogTitle() {
+        return this.order_id ? 'Editar orden de venta' : 'Nueva orden de venta'
+      },
+      filteredDataObj() {
+        return this.clients.filter((option) => {
+          return option.nombre
+            .toString()
+            .toLowerCase()
+            .indexOf(this.search.toLowerCase()) >= 0
+          })
       }
     },
     methods: {
-      loadOrders: async function(id) {
-        let response = await axios.get(`ventas/getClientOrders?id=${id}`)
+      loadOrders: async function() {
+        let response = await axios.get(`ventas/getOrders`)
         .then(response => {
           this.orders = response.data.orders;
 
@@ -420,16 +366,10 @@
         
         return response;
       },
-      openClientFile: async function(index){
-        this.client_id = this.clients[index].id;
-        await this.loadOrders(this.client_id);
-        this.ordersDialog = true;
-
-      },
       openOrder: async function(index) {
         await this.loadSessions(this.orders[index].id);
         this.sessionsDialog = true;
-        this.order_id = this.orders[index].id;
+        this.order = this.orders[index];
       },
       deleteSession(index)
       {
@@ -460,7 +400,7 @@
                     'La sesión ha sido eliminada.',
                     'success'
                   ).then(response => {
-                    this.loadSessions(this.order_id);
+                    this.loadSessions(this.order.id);
                   })
                 }
                 else
@@ -470,7 +410,7 @@
                     'Ha ocurrido un error.',
                     'warning'
                   ).then(response => {
-                    this.loadSessions(this.order_id);
+                    this.loadSessions(this.order.id);
                   })
                 }
               })
@@ -516,7 +456,7 @@
                     'La orden de venta ha sido eliminada.',
                     'success'
                   ).then(response => {
-                    this.loadOrders(this.client_id);
+                    
                   })
                 }
                 else
@@ -526,7 +466,7 @@
                     'Ha ocurrido un error.',
                     'warning'
                   ).then(response => {
-                    this.loadOrders(this.client_id);
+                  
                   })
                 }
               })
@@ -543,19 +483,12 @@
         })
 
       },
-      ordersDialogClose() {
-        setTimeout(() => {
-          this.editmode = false;
-          this.orders = [];
-          this.errors.clear();
-          this.client_id = null;
-        }, 300);
-      },
       sessionsDialogClose() {
         setTimeout(() => {
           this.editmode = false;
           this.sessions = [];
-          this.order_id = null;
+          this.order = { id: null, fecha: window.moment().format('YYYY-MM-DD'), client_id: null };
+          this.search = '';
           this.errors.clear();
         }, 300);
       },
@@ -564,7 +497,7 @@
           if(result)
           {
             let data = new FormData();
-            data.append('ventas_form',JSON.stringify({ order_id: this.order_id, sessions: this.sessions}));
+            data.append('ventas_form',JSON.stringify({ order: this.order, sessions: this.sessions}));
             axios.post('ventas/updateOrCreateOrderSessions',data)
             .then(response => {
               if(response.data.status == 200)
@@ -590,50 +523,14 @@
           }
         });
       },
-      saveClientOrders() {
-        this.$validator.validate().then(result => {
-          let data = new FormData();
-          data.append('ventas_form',JSON.stringify({ cliente_id: this.client_id, orders: this.orders}));
-          axios.post('ventas/updateOrCreateClientOrders',data)
-            .then(response => {
-              if(response.data.status == 200)
-              {
-                Swal.fire({
-                  type: 'success',
-                  title: 'Exito!',
-                  text: 'Operación realizada con éxito'
-                })
-                this.sessionsDialog  = false;
-                this.loadClients();
-                this.loadOrders(this.client_id);
-                this.close();
-              }
-              else
-              {
-                Swal.fire({
-                  type: 'error',
-                  title: 'Lo sentimos',
-                  text: 'Ha ocurrido un error'
-                })
-              }
-            })
-        });
-      },
       newSession() {
         this.sessions.push({
           servicio_id: null,
           precio: 0,
-          orden_id: this.order_id,
+          orden_id: this.order.id,
           fecha: window.moment().format('YYYY-MM-DD'),
           status: false,
           id: null
-        })
-      },
-      newOrder() {
-        this.orders.push({
-          id: null,
-          cliente_id: this.client_id,
-          fecha: window.moment().format('YYYY-MM-DD')
         })
       },
       loadClients() {
@@ -662,9 +559,6 @@
 
     },
     watch: {
-      ordersDialog(val) {
-        return val || this.ordersDialogClose();
-      },
       sessionsDialog(val) {
         return val || this.sessionsDialogClose();
       }
@@ -672,6 +566,7 @@
     created() {
       this.$validator.localize('en',dict);
       let t = this;
+      this.loadOrders();
       this.loadClients();
       this.loadServices();
     },

@@ -9,8 +9,7 @@ class Ventas extends CI_Controller {
     $this->load->model('Ventas_model', 'ventas');
   }
 
-  public function index()
-  {
+  public function index() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       redirect('admin');
     }
@@ -77,11 +76,18 @@ class Ventas extends CI_Controller {
     }
     
     $data = json_decode($this->input->post('ventas_form'),true);
+
+    if($data['order']['id'] == null)
+    {
+      $data['order']['id'] = $this->ventas->createOrder($data['order']);
+    }
+
     $createSessions = [];
     $updateSessions = [];
 
     foreach($data['sessions'] as $val)
     {
+      $val['orden_id'] = $data['order']['id'];
       if($val['id'] == NULL)
       {
         $createSessions[] = $val;
@@ -105,7 +111,6 @@ class Ventas extends CI_Controller {
     {
       echo json_encode(['status' => '500', 'message' => 'Sesiones no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     }
-
   }
 
   public function updateOrCreateClientOrders() {
@@ -143,9 +148,7 @@ class Ventas extends CI_Controller {
     {
       echo json_encode(['status' => '500', 'message' => 'Ordenes no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     }
-
   }
-
 
   public function deleteSession() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
@@ -167,7 +170,7 @@ class Ventas extends CI_Controller {
     }
   }
 
-    public function deleteOrder() {
+  public function deleteOrder() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -185,5 +188,16 @@ class Ventas extends CI_Controller {
     {
       echo json_encode(['status' => '500', 'message' => 'Orden de venta no eliminada, ha ocurrido un error', 'response' => $result]);
     }
-  }    
+  }
+
+  public function getOrders() {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $result = $this->ventas->getOrders();
+
+    echo json_encode(['orders' => $result]);
+  }
 }

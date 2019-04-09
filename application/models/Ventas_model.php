@@ -49,15 +49,25 @@ class Ventas_model extends CI_Model {
     return $this->db->error();
   }
 
+  public function createOrder($data) {
+
+    $this->db->insert('orden',[
+      'cliente_id' => $data['client_id'],
+      'fecha' => $data['fecha']
+    ]);
+
+    return $this->db->insert_id();
+  }
+
   public function deleteOrder($id) {
     $this->db->where('id', $id);
     $this->db->delete('orden');
     return $this->db->error();
   }
 
-  public function getAll() {
+  public function getOrders() {
     $this->db->select('*');
-    $this->db->from('clientes');
+    $this->db->from('orden');
     $query = $this->db->get();
     $result = $query->result();
     return $result;
