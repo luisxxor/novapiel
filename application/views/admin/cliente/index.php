@@ -380,6 +380,9 @@
         min_value: 'La edad seleccionada no es válida',
         numeric: 'El número introducido no es válido',
         decimal: 'El número introducido no es válido'
+      },
+      email: {
+        email: 'Este email no es válido'
       }
     }
   };
