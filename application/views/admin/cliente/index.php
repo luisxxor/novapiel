@@ -623,8 +623,11 @@
         }, 300);
       },
       closeClientFile() {
-        this.clearForm();
         this.clientFile = false;
+        setTimeout(() => {
+            this.clearForm();
+          }, 300
+        )
       },
       clearForm() {
         this.form = {
