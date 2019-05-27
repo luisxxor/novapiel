@@ -10,7 +10,7 @@ class Ventas_model extends CI_Model {
   }
 
   public function getOrderSessions($id) {
-    $this->db->select('ses.id, ses.servicio_id, ses.orden_id, ses.precio, ses.fecha, ses.status');
+    $this->db->select('ses.id, ses.servicio_id, ses.orden_id, ses.precio, ses.sesiones, ses.descuento, ses.finalizadas');
     $this->db->from('sesion ses');
     $this->db->join('servicios ser','ses.servicio_id = ser.id','left');
     $this->db->where('orden_id',$id);
@@ -52,7 +52,7 @@ class Ventas_model extends CI_Model {
   public function createOrder($data) {
 
     $this->db->insert('orden',[
-      'cliente_id' => $data['client_id'],
+      'cliente_id' => $data['cliente_id'],
       'fecha' => $data['fecha']
     ]);
 
@@ -66,8 +66,9 @@ class Ventas_model extends CI_Model {
   }
 
   public function getOrders() {
-    $this->db->select('*');
-    $this->db->from('orden');
+    $this->db->select('o.id, o.fecha, c.nombre, o.cliente_id');
+    $this->db->from('orden o');
+    $this->db->join('clientes c','o.cliente_id = c.id','left');
     $query = $this->db->get();
     $result = $query->result();
     return $result;

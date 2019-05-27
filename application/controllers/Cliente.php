@@ -20,6 +20,12 @@ class Cliente extends CI_Controller {
   }
 
   function getClients() {
+    
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
     $data['clients'] = $this->client->getAll();
     header('Content-Type: application/json');
     echo json_encode(['clients' => $data['clients']]);

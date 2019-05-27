@@ -7,6 +7,11 @@
 <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
+<link href="https://cdn.jsdelivr.net/npm/flatpickr@4/dist/flatpickr.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-flatpickr-component@8"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.5.7/dist/l10n/es.js"></script>
+
 <style>
 
   .table thead tr th,
@@ -18,20 +23,12 @@
     margin-top: 1em;
   }
 
-  #addClientButton {
+  #addOrderButton {
     margin-bottom: 1em;
   }
 
   .clickable {
     cursor: pointer;
-  }
-
-/*   .modal-card, .modal-card-body {
-    overflow: visible!important;
-  } */
-
-  #modalSessions .modal-card {
-    width: calc(70vw - 40px);
   }
 
   .button.is-primary {
@@ -62,18 +59,6 @@
     box-shadow: none;
   }
 
-  .datepicker .datepicker-table .datepicker-cell {
-    padding: .1rem 0.75rem;
-  }
-
-  .datepicker .datepicker-content {
-    height: 10.25rem;
-  }
-
-  .datepicker .datepicker-table .datepicker-body .datepicker-row .datepicker-cell.is-selected {
-    background-color: #00d1b2;
-    color: #fff;
-  }
 
   .select:not(.is-multiple):not(.is-loading):after {
     border-color: #00d1b2;
@@ -85,17 +70,52 @@
     color: #00d1b2!important;
   }
 
-  .datepicker.control input[type=text] {
-    text-align: center;
-    padding: 0;
-  }
-
   .switch:hover input[type=checkbox]:checked+.check {
     background: #00d1b2a8;
   }
 
   .switch input[type=checkbox]:checked+.check {
     background: #00d1b2;
+  }
+
+  .flatpickr-input {
+    background-color: #fff;
+    border-color: #dbdbdb;
+    color: #363636;
+    box-shadow: inset 0 1px 2px hsla(0,0%,4%,.1);
+    max-width: 100%;
+    width: 100%;
+    -webkit-appearance: none;
+    align-items: center;
+    border: 1px solid #DBDBDB;
+    border-radius: 4px;
+    /* box-shadow: none; */
+    display: inline-flex;
+    font-size: 1rem;
+    height: 2.25em;
+    justify-content: flex-start;
+    line-height: 1.5;
+    padding: calc(.375em - 1px) calc(.625em - 1px);
+    position: relative;
+    vertical-align: top;
+  }
+
+
+
+  @media screen and (min-width: 769px) {
+     #modalSessions .modal-card {
+      margin: 0;
+      width: calc(95vw - 40px);
+    }
+  }
+
+  @media screen and (max-width: 1088px) {
+    #service_price_header,
+    #total_price_header,
+    .service_price_field,
+    .total_price_field {
+      display: none;
+    }
   }
 
 </style>
@@ -118,6 +138,9 @@
                     Fecha
                   </th>
                   <th>
+                    Cliente
+                  </th>
+                  <th>
                     Acciones
                   </th>
                 </tr>
@@ -125,15 +148,16 @@
               <tbody v-cloak>
                 <tr v-cloak v-show="!ordersIsEmpty" v-for="(order,index) in orders">
                   <td v-cloak>{{ order.id }}</td>
-                  <td v-cloak>{{ order.fecha }}</td>
+                  <td v-cloak>{{ order.fecha | parseDate}}</td>
+                  <td v-cloak>{{ order.nombre }}</td>
                   <td>
                     <div class="actionContainer">
                       <span
                       class="icon clickable tooltip"
-                      data-tooltip="Ver ficha"
+                      data-tooltip="Editar"
                       @click="openOrder(index)"
                       >
-                        <i class="fas fa-eye"></i>
+                        <i class="fas fa-edit"></i>
                       </span>
                     </div>
                   </td>
@@ -165,50 +189,47 @@
             </header>
             <section class="modal-card-body" style="overflow-x: hidden;">
               <b-field label="Cliente">
-                <b-autocomplete
-                  v-model="search"
-                  name="client_order"
-                  :data="filteredDataObj"
-                  @select="option => order.client_id = option.id"
-                  :open-on-focus="true"
-                  field="nombre"
+                <b-select
                   v-validate="'required'"
+                  v-model="order.cliente_id"
+                  placeholder="Selecciona un cliente"
+                  expanded
                 >
-                  <template slot="empty">No hay clientes que coincidan con su búsqueda.</template>
-                </b-autocomplete>
+                  <option
+                    v-for="client in clients"
+                    :value="client.id"
+                    :key="`client_${client.id}`">
+                    {{ client.nombre }}
+                  </option>
+                </b-select>
               </b-field>
               <p class="help is-danger" v-if="errors.first(`client_order`)">Debe seleccionar un cliente</p>
-              <b-field label="Fecha">              
-                <b-datepicker
-                  placeholder="Fecha"
-                  :date-formatter="(date) => dateToFront(date)"
-                  :date-parser="(date) => toDateobject(date)"
-                  icon="calendar"
-                  @input="date => order.fecha = dateToBd(date)"
-                  :value="toDateObject(order.fecha)"
-                  :month-names="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
-                  :day-names="['D','L','Ma','Mi','J','V','S']"
-                  icon-pack="fa"
-                >
-                </b-datepicker>
+              <b-field label="Fecha">
+                <flat-pickr v-model="order.fecha" :config="config"></flat-pickr>
               </b-field>
+              <hr>
               <table class="table is-fullwidth">
                 <thead v-cloak v-show="!sessionsIsEmpty">
                   <tr v-cloak>
                     <th>
                       Servicio
                     </th>
-                    <th>
+                    <th id="service_price_header">
                       Precio
                     </th>
-                    <th>
-                      Fecha
+                    <th style="width: 90px;">
+                      Descuento
+                    </th>
+                    <th id="total_price_header">
+                      Total
+                    </th>
+                    <th style="width: 90px;">
+                      Sesiones
                     </th>
                     <th>
-                      Status
+                      Finalizadas
                     </th>
                     <th>
-                      Acciones
                     </th>
                   </tr>
                 </thead>
@@ -217,7 +238,12 @@
                     <td v-cloak>
                       <div class="field">
                         <div class="select" :class="{'is-danger': errors.first(`service_select_${index}`)}">
-                          <select :name="`service_select_${index}`" v-validate="'required'" v-model="session.servicio_id">
+                          <select
+                            :name="`service_select_${index}`"
+                            v-validate="'required'"
+                            v-model="session.servicio_id"
+                            @change="changeServicePrice(index)"
+                          >
                             <option v-if="services.length > 0" :value="service.id" v-for="(service,service_index) in services">{{ service.title }}</option>
                             <option v-if="services.length == 0" value="">No hay servicios registrados.</option>
                           </select>
@@ -225,40 +251,87 @@
                         <p class="help is-danger" v-if="errors.first(`service_select_${index}`)">Debe seleccionar un servicio</p>
                       </div>
                     </td>
-                    <td v-cloak>
+                    <td v-cloak class="service_price_field">
                       <div class="field">
                         <input
                           :name="`service_price_${index}`"
                           class="input"
                           :class="{'is-danger': errors.first(`service_price_${index}`)}"
                           type="number"
-                          v-model="session.precio"
+                          v-model.number="session.precio_servicio"
                           v-validate="'min_value:0'"
                           placeholder="Precio"
+                          readonly
                         >
                         <p class="help is-danger" v-if="errors.first(`service_price_${index}`)">No se permiten números negativos</p>
                       </div>
                     </td>
-                    <td v-cloak>
-                      <b-datepicker
-                        placeholder="Fecha"
-                        :date-formatter="(date) => dateToFront(date)"
-                        :date-parser="(date) => toDateobject(date)"
-                        icon="calendar"
-                        @input="date => session.fecha = dateToBd(date)"
-                        :value="toDateObject(session.fecha)"
-                        :month-names="['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']"
-                        :day-names="['D','L','Ma','Mi','J','V','S']"
-                        icon-pack="fa"
-                      >
-                      </b-datepicker>
+                    <td v-cloak style="min-width: 125px;">
+                      <div class="field">
+                        <p class="control has-icons-left">
+                          <input
+                            :name="`session_discount_${index}`"
+                            class="input"
+                            :class="{'is-danger': errors.first(`session_discount_${index}`)}"
+                            type="number"
+                            step="0.01"
+                            max="100"
+                            v-model.number="session.descuento"
+                            v-validate="'min_value:0'"
+                            placeholder="Descuento"
+                            @input="calculateTotal"
+                          >
+                          <span class="icon is-small is-left">
+                            <i class="fas fa-percent"></i>
+                          </span>
+                        </p>
+                        <p class="help is-danger" v-if="errors.first(`session_discount_${index}`)">Inserte un porcentaje válido.</p>
+                      </div>
+                    </td>
+                    <td v-cloak class="total_price_field">
+                      <div class="field">
+                        <input
+                          :name="`total_price_${index}`"
+                          class="input"
+                          :class="{'is-danger': errors.first(`total_price_${index}`)}"
+                          type="number"
+                          v-model.number="session.precio"
+                          v-validate="'min_value:0'"
+                          placeholder="Precio total"
+                          v-model="session.precio"
+                          readonly
+                        >
+                        <p class="help is-danger" v-if="errors.first(`total_price_${index}`)">No se permiten números negativos</p>
+                      </div>
                     </td>
                     <td v-cloak>
                       <div class="field">
-                        <b-switch v-model="session.status"
-                          size="is-small">
-                          {{ session.status | pending }}
-                        </b-switch>
+                        <input
+                          :name="`session_qty_${index}`"
+                          class="input"
+                          :class="{'is-danger': errors.first(`session_qty_${index}`)}"
+                          type="number"
+                          v-model.number="session.sesiones"
+                          v-validate="'min_value:1'"
+                          placeholder="Sesiones"
+                          @input="calculateTotal"
+                        >
+                        <p class="help is-danger" v-if="errors.first(`session_qty_${index}`)">Se debe colocar al menos 1 sesión</p>
+                      </div>
+                    </td>
+                    <td v-cloak stlye="padding-left: 0;">
+                      <div class="field">                        
+                        <div class="select" :class="{'is-danger': errors.first(`session_finished_${index}`)}">
+                          <select
+                            :name="`session_finished_${index}`"
+                            v-model.number="session.finalizadas"
+                            v-validate="'required'"
+                          >
+                            <option>0</option>
+                            <option v-for="i in session.sesiones" :key="`session_finished_${index}_${i}`">{{ i }}</option>
+                          </select>
+                        </div>
+                        <p class="help is-danger" v-if="errors.first(`session_finished_${index}`)">Seleccione una opción válida.</p>
                       </div>
                     </td>
                     <td>
@@ -296,29 +369,31 @@
 
 <script>
   axios.defaults.baseURL = '<?PHP echo base_url(); ?>';
-  const dict = {
-    custom: {
-
-    }
-  };
   
+  Vue.component('flat-pickr', VueFlatpickr);
   Vue.use(VeeValidate);
   new Vue({
     el: '#app',
     data: {
       clients: [],
       orders: [],
-      client: null,
       order: {
         id: null,
         fecha: window.moment().format('YYYY-MM-DD'),
-        client_id: null
+        cliente_id: null
       },
       sessions: [],
       sessionsDialog: false,
       editmode: false,
       services: [],
-      search: ''
+      search: '',
+      config: {
+        wrap: true,
+        altFormat: 'd/m/Y',
+        altInput: true,
+        dateFormat: 'Y-m-d',
+        locale: flatpickr.l10ns.es        
+      }              
     },
     computed: {
       clientsIsEmpty() {
@@ -337,18 +412,23 @@
         return this.sessions.length == 0;
       },
       sessionsDialogTitle() {
-        return this.order_id ? 'Editar orden de venta' : 'Nueva orden de venta'
-      },
-      filteredDataObj() {
-        return this.clients.filter((option) => {
-          return option.nombre
-            .toString()
-            .toLowerCase()
-            .indexOf(this.search.toLowerCase()) >= 0
-          })
+        return this.order.id ? 'Editar orden de venta' : 'Nueva orden de venta'
       }
     },
     methods: {
+      changeServicePrice(index) {
+        let servicio_id = this.sessions[index].servicio_id;
+        let servicio = this.services.find(val => val.id == servicio_id);
+
+        this.sessions[index].precio_servicio = parseInt(servicio.price)
+        this.calculateTotal();
+      },
+      calculateTotal() {
+        this.sessions.forEach(val => {
+          val.precio = val.precio_servicio * val.sesiones;
+          val.precio = val.precio - (val.precio * val.descuento / 100)
+        })
+      },
       loadOrders: async function() {
         let response = await axios.get(`ventas/getOrders`)
         .then(response => {
@@ -361,18 +441,26 @@
         let response = axios.get(`ventas/getOrderSessions?id=${id}`)
         .then(response => {
           let sessions = response.data.sessions;
+          sessions.forEach(val => {
+            val.sesiones = parseInt(val.sesiones)
+            val.finalizadas = parseInt(val.finalizadas)
+          })
           this.sessions = sessions;
         })
         
         return response;
       },
       openOrder: async function(index) {
+        this.order = Object.assign({}, this.orders[index]);
         await this.loadSessions(this.orders[index].id);
+
+        this.sessions.forEach((val, index) => {
+          this.changeServicePrice(index)
+        })
+        
         this.sessionsDialog = true;
-        this.order = this.orders[index];
       },
-      deleteSession(index)
-      {
+      deleteSession(index) {
         Swal({
           title: '¿Estás seguro?',
           text: "¡Las sesión será eliminada para siempre!",
@@ -383,18 +471,14 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            if(this.sessions[index].id == null)
-            {
+            if(this.sessions[index].id == null) {
               this.sessions.pop(index);
-            }
-            else
-            {
+            } else {
               let data = new FormData();
               data.append('id',this.sessions[index].id);
               axios.post('ventas/deleteSession',data)
               .then(response => {
-                if(response)
-                {
+                if(response) {
                   Swal(
                     '¡Eliminado!',
                     'La sesión ha sido eliminada.',
@@ -402,9 +486,7 @@
                   ).then(response => {
                     this.loadSessions(this.order.id);
                   })
-                }
-                else
-                {
+                } else {
                   Swal(
                     'Error',
                     'Ha ocurrido un error.',
@@ -426,8 +508,7 @@
           }
         })
       },
-      deleteOrder(index)
-      {
+      deleteOrder(index) {
         Swal({
           title: '¿Estás seguro?',
           text: "¡La orden de venta y las sesiones que tenga registradas serán eliminadas para siempre!",
@@ -438,19 +519,15 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            if(this.orders[index].id == null)
-            {
+            if(this.orders[index].id == null) {
               this.orders.pop(index);
-            }
-            else
-            {
+            } else {
               let data = new FormData();
               data.append('id',this.orders[index].id);
               console.log(this.orders[index])
               axios.post(`ventas/deleteOrder`,data)
               .then(response => {
-                if(response)
-                {
+                if(response) {
                   Swal(
                     '¡Eliminado!',
                     'La orden de venta ha sido eliminada.',
@@ -458,9 +535,7 @@
                   ).then(response => {
                     
                   })
-                }
-                else
-                {
+                } else {
                   Swal(
                     'Error',
                     'Ha ocurrido un error.',
@@ -487,21 +562,30 @@
         setTimeout(() => {
           this.editmode = false;
           this.sessions = [];
-          this.order = { id: null, fecha: window.moment().format('YYYY-MM-DD'), client_id: null };
+          this.order = { id: null, fecha: window.moment().format('YYYY-MM-DD'), cliente_id: null };
           this.search = '';
           this.errors.clear();
         }, 300);
       },
       saveOrderSessions() {
         this.$validator.validate().then(result => {
-          if(result)
-          {
+          if(result) {
             let data = new FormData();
-            data.append('ventas_form',JSON.stringify({ order: this.order, sessions: this.sessions}));
+            let sessions = this.sessions.map( val => {
+              return {
+                "id": val.id,
+                "orden_id": val.orden_id,
+                "precio": val.precio,
+                "servicio_id": val.servicio_id,
+                "sesiones": val.sesiones,
+                "finalizadas": val.finalizadas,
+                "descuento": val.descuento
+              }
+            })
+            data.append('ventas_form',JSON.stringify({ order: this.order, sessions: sessions}));
             axios.post('ventas/updateOrCreateOrderSessions',data)
             .then(response => {
-              if(response.data.status == 200)
-              {
+              if(response.data.status == 200) {
                 Swal.fire({
                   type: 'success',
                   title: 'Exito!',
@@ -509,10 +593,8 @@
                 })
                 this.sessionsDialog  = false;
                 this.loadClients();
-                this.close();
-              }
-              else
-              {
+                this.sessionsDialogClose();
+              } else {
                 Swal.fire({
                   type: 'error',
                   title: 'Lo sentimos',
@@ -527,9 +609,11 @@
         this.sessions.push({
           servicio_id: null,
           precio: 0,
+          descuento: 0,
+          precio_servicio: 0,
           orden_id: this.order.id,
-          fecha: window.moment().format('YYYY-MM-DD'),
-          status: false,
+          sesiones: 1,
+          finalizadas: 0,
           id: null
         })
       },
@@ -564,7 +648,6 @@
       }
     },
     created() {
-      this.$validator.localize('en',dict);
       let t = this;
       this.loadOrders();
       this.loadClients();

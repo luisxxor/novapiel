@@ -420,7 +420,7 @@
       loadConfig() {
         axios.get('configuracion/get')
         .then(({data: {configuration}}) => {
-          this.form = configuration
+          if(configuration) this.form = configuration;
         })
       },
     },

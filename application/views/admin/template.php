@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title><?PHP echo $title ?></title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  
   <style>
     [v-cloak] {
       display: none;
@@ -41,23 +42,27 @@
 
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <a href="<?PHP echo base_url('usuario'); ?>" class="navbar-item">
-          Usuarios
-        </a>
-
-        <a href="<?PHP echo base_url('servicio'); ?>" class="navbar-item">
+        <a href="<?PHP echo base_url('admin/servicios'); ?>" class="navbar-item">
           Servicios
         </a>
 
-        <a href="<?PHP echo base_url('cliente'); ?>" class="navbar-item">
+        <a href="<?PHP echo base_url('admin/clientes'); ?>" class="navbar-item">
           Clientes
         </a>
 
-        <a class="navbar-item" href="<?PHP echo base_url('ventas'); ?>">
+        <a class="navbar-item" href="<?PHP echo base_url('admin/ventas'); ?>">
           Ventas
         </a>
 
-        <a href="<?PHP echo base_url('configuracion') ?>" class="navbar-item">
+        <a href="<?PHP echo base_url('admin/contacto'); ?>" class="navbar-item">
+          Contacto
+        </a>
+
+        <a href="<?PHP echo base_url('admin/usuarios'); ?>" class="navbar-item">
+          Usuarios
+        </a>
+
+        <a href="<?PHP echo base_url('admin/configuracion') ?>" class="navbar-item">
           Configuracion
         </a>
 

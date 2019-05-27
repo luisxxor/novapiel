@@ -20,7 +20,12 @@ class Contacto extends CI_Controller {
 
   public function admin()
   {
-    $this->load->view('admin/contacto/index');
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      redirect('admin');
+    }
+    
+    $data = array('content' => 'admin/contacto/index','title' => 'Novapiel - Mensajes de Contacto');
+    $this->load->view('admin/template',$data);
   }
 
   public function procesarFormularioContacto()
@@ -31,8 +36,9 @@ class Contacto extends CI_Controller {
     $data['email'] = $this->input->post('email');
     $data['telefono'] = $this->input->post('phone');
     $data['mensaje'] = $this->input->post('message');
+    $data['fecha'] = date('Y-m-d');
 
-    $this->sendEmail($data);
+    //$this->sendEmail($data);
 
     $result = $this->contacto->create($data);
     if($result)
@@ -98,4 +104,60 @@ class Contacto extends CI_Controller {
   {
     $this->load->view('contacto/error');
   }
+
+  public function getAll()
+  {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $data['contactMessages'] = $this->contacto->getAll();
+    header('Content-Type: application/json');
+    echo json_encode(['contactMessages' => $data['contactMessages']]);
+  }
+
+  public function markAsRead()
+  {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $id = $this->input->post('id');
+
+    $result = $this->contacto->markAsRead($id);
+
+    if($result['code'] == 0)
+    {
+      echo json_encode(['status' => '201', 'message' => 'Marcado como leído']);
+    }
+    else
+    {
+      echo json_encode(['status' => '500', 'message' => 'Error al marcar como leído']);
+    }
+  }
+
+  public function markAsUnread()
+  {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $id = $this->input->post('id');
+
+    $result = $this->contacto->markAsUnread($id);
+
+    if($result['code'] == 0)
+    {
+      echo json_encode(['status' => '201', 'message' => 'Marcado como no leído']);
+    }
+    else
+    {
+      echo json_encode(['status' => '500', 'message' => 'Error al marcar como no leído']);
+    }
+  }
+
+
 }

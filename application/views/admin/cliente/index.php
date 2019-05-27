@@ -3,6 +3,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vee-validate@latest/dist/vee-validate.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.33.1/dist/sweetalert2.all.min.js" integrity="sha256-Qfxgn9jULeGAdbaeDjXeIhZB3Ra6NCK3dvjwAG8Y+xU=" crossorigin="anonymous"></script>
+
 <div id="app">
   <section>
     <div class="container">
@@ -45,16 +46,23 @@
                   <td>
                     <div>
                       <span
-                      class="icon clickable tooltip"
-                      data-tooltip="Editar"
-                      @click="editItem(index)"
+                        class="icon clickable tooltip"
+                        data-tooltip="Ver ficha"
+                        @click="seeItem(index)"
+                      >
+                        <i class="fas fa-eye"></i>
+                      </span>
+                      <span
+                        class="icon clickable tooltip"
+                        data-tooltip="Editar"
+                        @click="editItem(index)"
                       >
                         <i class="fas fa-edit"></i>
                       </span>
                       <span
-                      class="icon clickable tooltip"
-                      data-tooltip="Eliminar"
-                      @click="deleteItem(index)"
+                        class="icon clickable tooltip"
+                        data-tooltip="Eliminar"
+                        @click="deleteItem(index)"
                       >
                         <i class="fas fa-trash"></i>
                       </span>
@@ -365,6 +373,54 @@
             </div>
           </transition>
         </div>
+
+        <div id="clientFile" class="modal" :class="{'is-active': clientFile}">
+          <transition name="fade">
+            <div @click="closeClientFile" class="modal-background" v-show="clientFile"></div>
+          </transition>
+          <transition name="bounce">
+            <div class="modal-card" v-show="clientFile">
+              <header class="modal-card-head">
+                <p v-cloak class="modal-card-title"> {{ form.nombre }} </p>
+                <button @click="closeClientFile" class="delete" aria-label="close"></button>
+              </header>
+              <section class="modal-card-body" style="overflow-x: hidden;">
+                <p class="is-size-5 has-text-centered">DATOS PERSONALES</p>
+                <div class="sub-content">
+                  <p><strong>Nombre:</strong> {{ form.nombre }}</p>
+                  <p v-if="form.edad != ''"><strong>Edad:</strong> {{ form.edad }}</p>
+                  <p v-if="form.telefono != ''"><strong>Telefono:</strong> {{ form.telefono }}</p>
+                  <p v-if="form.email != ''"><strong>Email:</strong> {{ form.email }}</p>
+                  <p v-if="form.ocupacion != ''"><strong>Ocupación:</strong> {{ form.ocupacion }}</p>
+                </div>
+
+                <p class="is-size-5 has-text-centered">ENFERMEDADES CRONICAS</p>
+                <ul class="sub-content" v-if="diseases.length > 0">
+                  <li v-for="disease in diseases">
+                    {{ disease.value }}
+                  </li>
+                </ul>
+                <p class="sub-content" v-else>No presenta.</p>
+
+                <p class="is-size-5 has-text-centered">MEDICAMENTOS</p>
+                <ul class="sub-content" v-if="medicines.length > 0">
+                  <li v-for="medicine in medicines">
+                    {{ medicine.value }}
+                  </li>
+                </ul>
+                <p class="sub-content" v-else>No presenta.</p>
+
+                <p class="is-size-5 has-text-centered">OTROS</p>
+                <ul class="sub-content" v-if="others.length > 0">
+                  <li v-for="other in others">
+                    {{ other.value }}
+                  </li>
+                </ul>
+                <p class="sub-content" v-else>No presenta.</p>
+              </section>
+            </div>
+          </transition>
+        </div>
     </div>
   </section>
 </div>
@@ -425,9 +481,51 @@
       },
       tab: 0,
       formDialog: false,
-      editmode: false
+      editmode: false,
+      clientFile: false
     },
     computed: {
+      diseases() {
+        let diseases = [
+          { field: 'hipertension', value: 'Hipertensión' },
+          { field: 'diabetes', value: 'Diabetes' },
+          { field: 'dislipidemia', value: 'Dislipidemia' },
+          { field: 'hipotiroidismo', value: 'Hipotiroidismo' },
+          { field: 'cancer', value: 'Cáncer' },
+          { field: 'miastenia_gravis', value: 'Miastenia gravis' },
+          { field: 'enfermedad_neurologica', value: 'Enfermedad neurológica' },
+          { field: 'problemas_coagulacion', value: 'Problemas de coagulación' },
+          { field: 'enfermedad_autoinmune', value: 'Enfermedad autoinmune' },
+          { field: 'infarto_acc_vascular', value: 'Infarto cardíaco / acc vascular' }
+        ];
+        
+        return diseases.filter(v => this.form[v.field] )
+      },
+      medicines() {
+        let medicines = [
+          { field: 'anticoagulantes', value: 'Anticoagulantes' },
+          { field: 'aspirina', value: 'Aspirina' },
+          { field: 'antiinflamatorios', value: 'Anti-inflamatorios' },
+          { field: 'corticoides', value: 'Corticoides' },
+          { field: 'relajantes_musculares', value: 'Relajantes musculares' },
+          { field: 'antibioticos', value: 'Antibioticos' },
+          { field: 'hormonas', value: 'Hormonas' },
+          { field: 'otro_medicamento', value: 'Otro medicamento' }
+        ]
+
+        return medicines.filter(v => this.form[v.field])
+      },
+      others() {
+        let others = [
+          { field: 'embarazo', value: 'Embarazo' },
+          { field: 'lactancia', value: 'Lactancia' },
+          { field: 'alergia_lactosa', value: 'Alergia a la lactosa' },
+          { field: 'alergia_huevo', value: 'Alergia al huevo' },
+          { field: 'alergia_otro_medicamento', value: 'Alergia a otro medicamento' }
+        ]
+
+        return others.filter(v => this.form[v.field])
+      },
       clientsIsEmpty() {
         return this.clients.length == 0;
       },
@@ -446,15 +544,26 @@
         this.errors.clear();
         this.form = Object.assign({},this.clients[index]);
 
-        for(let [key, value] of Object.entries(this.form))
-        {
-          if(['id','nombre','edad','telefono','email','ocupacion'].indexOf(key) == -1)
-          {
+        for(let [key, value] of Object.entries(this.form)) {
+          if(['id','nombre','edad','telefono','email','ocupacion'].indexOf(key) == -1) {
             this.form[key] = !!+value;
           }
         }
+
         this.formDialog = true;
         this.editmode = true;
+      },
+      seeItem(index) {
+
+        this.form = Object.assign({},this.clients[index]);
+
+        for(let [key, value] of Object.entries(this.form)) {
+          if(['id','nombre','edad','telefono','email','ocupacion'].indexOf(key) == -1) {
+            this.form[key] = !!+value;
+          }
+        }
+
+        this.clientFile = true;
       },
       deleteItem(index){
         Swal({
@@ -506,39 +615,48 @@
       close() {
         this.editmode = false;
         setTimeout(() => {
-          this.form = {
-            id: null,
-            nombre: '',
-            telefono: '',
-            email: '',
-            ocupacion: '',
-            hipertension: false,
-            diabetes: false,
-            dislipidemia: false,
-            hipotiroidismo: false,
-            cancer: false,
-            miastenia_gravis: false,
-            enfermedad_neurologica: false,
-            problemas_coagulacion: false,
-            enfermedad_autoinmune: false,
-            infarto_acc_vascular: false,
-            anticoagulantes: false,
-            aspirina: false,
-            antiinflamatorios: false,
-            corticoides: false,
-            relajantes_musculares: false,
-            antibioticos: false,
-            hormonas: false,
-            otro_medicamento: false,
-            embarazo: false,
-            lactancia: false,
-            alergia_huevo: false,
-            alergia_lactosa: false,
-            alergia_otro_medicamento: false
-          };
+          this.clearForm();
           this.tab = 0;
-          this.errors.clear();
+          setTimeout(() => {
+            this.errors.clear();
+          }, 100)
         }, 300);
+      },
+      closeClientFile() {
+        this.clearForm();
+        this.clientFile = false;
+      },
+      clearForm() {
+        this.form = {
+          id: null,
+          nombre: '',
+          telefono: '',
+          email: '',
+          ocupacion: '',
+          hipertension: false,
+          diabetes: false,
+          dislipidemia: false,
+          hipotiroidismo: false,
+          cancer: false,
+          miastenia_gravis: false,
+          enfermedad_neurologica: false,
+          problemas_coagulacion: false,
+          enfermedad_autoinmune: false,
+          infarto_acc_vascular: false,
+          anticoagulantes: false,
+          aspirina: false,
+          antiinflamatorios: false,
+          corticoides: false,
+          relajantes_musculares: false,
+          antibioticos: false,
+          hormonas: false,
+          otro_medicamento: false,
+          embarazo: false,
+          lactancia: false,
+          alergia_huevo: false,
+          alergia_lactosa: false,
+          alergia_otro_medicamento: false
+        };
       },
       save() {
         this.$validator.validate().then(result => {
@@ -648,6 +766,10 @@
 
   .clickable {
     cursor: pointer;
+  }
+
+  .sub-content {
+    padding: 2em;
   }
 
   .slideLeft-enter, .slideRight-enter {

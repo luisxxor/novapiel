@@ -248,14 +248,16 @@
         })
       },
       close() {
-        this.form = {
-          id: null,
-          username: '',
-          password: ''
-        }
         setTimeout(() => {
           this.editmode = false;
-          this.errors.clear();
+          this.form = {
+            id: null,
+            username: '',
+            password: ''
+          }
+          setTimeout(() => {
+            this.errors.clear();
+          }, 100)
         }, 300);
       },
       save() {

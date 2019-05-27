@@ -41,11 +41,6 @@ class Ventas extends CI_Controller {
 
     $result = $this->ventas->getOrderSessions($id);
 
-    foreach($result as $res)
-    {
-      $res->status = boolval($res->status);
-    }
-
     echo json_encode(['sessions' => $result]);
   }
   
@@ -59,12 +54,9 @@ class Ventas extends CI_Controller {
 
     $result = $this->client->form_insert($data);
 
-    if($result['code'] == 0)
-    {
+    if($result['code'] == 0) {
       echo json_encode(['status' => '201', 'message' => 'Venta creada exitosamente']);
-    }
-    else
-    {
+    } else {
       echo json_encode(['status' => '500', 'message' => 'Venta no creada, ha ocurrido un error']);
     }
   }
@@ -77,24 +69,18 @@ class Ventas extends CI_Controller {
     
     $data = json_decode($this->input->post('ventas_form'),true);
 
-    if($data['order']['id'] == null)
-    {
+    if($data['order']['id'] == null) {
       $data['order']['id'] = $this->ventas->createOrder($data['order']);
     }
 
     $createSessions = [];
     $updateSessions = [];
 
-    foreach($data['sessions'] as $val)
-    {
+    foreach($data['sessions'] as $val) {
       $val['orden_id'] = $data['order']['id'];
-      if($val['id'] == NULL)
-      {
+      if($val['id'] == NULL) {
         $createSessions[] = $val;
-      }
-      
-      else
-      {
+      } else {
         $updateSessions[] = $val;
       }
     }
@@ -103,12 +89,9 @@ class Ventas extends CI_Controller {
 
     $resultUpdate = count($updateSessions) > 0 ? $this->ventas->updateSessions($updateSessions) : array('code' => 0);
 
-    if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0)
-    {
+    if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Sesiones actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
-    }
-    else
-    {
+    } else {
       echo json_encode(['status' => '500', 'message' => 'Sesiones no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     }
   }
@@ -123,15 +106,10 @@ class Ventas extends CI_Controller {
     $createOrders = [];
     $updateOrders = [];
 
-    foreach($data['orders'] as $val)
-    {
-      if($val['id'] == NULL)
-      {
+    foreach($data['orders'] as $val) {
+      if($val['id'] == NULL) {
         $createOrders[] = $val;
-      }
-      
-      else
-      {
+      } else {
         $updateOrders[] = $val;
       }
     }
@@ -140,12 +118,9 @@ class Ventas extends CI_Controller {
 
     $resultUpdate = count($updateOrders) > 0 ? $this->ventas->updateOrders($updateOrders) : array('code' => 0);
 
-    if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0)
-    {
+    if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Ordenes actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
-    }
-    else
-    {
+    } else {
       echo json_encode(['status' => '500', 'message' => 'Ordenes no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     }
   }
@@ -160,12 +135,9 @@ class Ventas extends CI_Controller {
 
     $result = $this->ventas->deleteSession($id);
 
-    if($result['code'] == 0)
-    {
+    if($result['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Sesion eliminada correctamente','response' => $result]);
-    }
-    else
-    {
+    } else {
       echo json_encode(['status' => '500', 'message' => 'Sesion no eliminada, ha ocurrido un error', 'response' => $result]);
     }
   }
@@ -180,12 +152,9 @@ class Ventas extends CI_Controller {
 
     $result = $this->ventas->deleteOrder($id);
 
-    if($result['code'] == 0)
-    {
+    if($result['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Orden de venta eliminada correctamente','response' => $result]);
-    }
-    else
-    {
+    } else {
       echo json_encode(['status' => '500', 'message' => 'Orden de venta no eliminada, ha ocurrido un error', 'response' => $result]);
     }
   }
