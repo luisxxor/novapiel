@@ -6,7 +6,7 @@ class Ventas extends CI_Controller {
 
   public function __construct() {
     parent::__construct();
-    $this->load->model('Ventas_model', 'ventas');
+    $this->load->model('Sell_model', 'sell');
   }
 
   public function index() {
@@ -14,7 +14,7 @@ class Ventas extends CI_Controller {
       redirect('admin');
     }
     
-    $data = array('content' => 'admin/ventas/index','title' => 'Novapiel - Ventas');
+    $data = array('content' => 'admin/venta/index','title' => 'Novapiel - Ventas');
     $this->load->view('admin/template',$data);
   }
 
@@ -26,7 +26,7 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->get('id');
 
-    $result = $this->ventas->getClientOrders($id);
+    $result = $this->sell->getClientOrders($id);
 
     echo json_encode(['orders' => $result]);
   }
@@ -39,7 +39,7 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->get('id');
 
-    $result = $this->ventas->getOrderSessions($id);
+    $result = $this->sell->getOrderSessions($id);
 
     echo json_encode(['sessions' => $result]);
   }
@@ -70,7 +70,7 @@ class Ventas extends CI_Controller {
     $data = json_decode($this->input->post('ventas_form'),true);
 
     if($data['order']['id'] == null) {
-      $data['order']['id'] = $this->ventas->createOrder($data['order']);
+      $data['order']['id'] = $this->sell->createOrder($data['order']);
     }
 
     $createSessions = [];
@@ -85,9 +85,9 @@ class Ventas extends CI_Controller {
       }
     }
 
-    $resultCreate = count($createSessions) > 0 ? $this->ventas->createSessions($createSessions) : array('code' => 0);
+    $resultCreate = count($createSessions) > 0 ? $this->sell->createSessions($createSessions) : array('code' => 0);
 
-    $resultUpdate = count($updateSessions) > 0 ? $this->ventas->updateSessions($updateSessions) : array('code' => 0);
+    $resultUpdate = count($updateSessions) > 0 ? $this->sell->updateSessions($updateSessions) : array('code' => 0);
 
     if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Sesiones actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
@@ -114,9 +114,9 @@ class Ventas extends CI_Controller {
       }
     }
 
-    $resultCreate = count($createOrders) > 0 ? $this->ventas->createOrders($createOrders) : array('code' => 0);
+    $resultCreate = count($createOrders) > 0 ? $this->sell->createOrders($createOrders) : array('code' => 0);
 
-    $resultUpdate = count($updateOrders) > 0 ? $this->ventas->updateOrders($updateOrders) : array('code' => 0);
+    $resultUpdate = count($updateOrders) > 0 ? $this->sell->updateOrders($updateOrders) : array('code' => 0);
 
     if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Ordenes actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
@@ -133,7 +133,7 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->post('id');
 
-    $result = $this->ventas->deleteSession($id);
+    $result = $this->sell->deleteSession($id);
 
     if($result['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Sesion eliminada correctamente','response' => $result]);
@@ -150,7 +150,7 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->post('id');
 
-    $result = $this->ventas->deleteOrder($id);
+    $result = $this->sell->deleteOrder($id);
 
     if($result['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Orden de venta eliminada correctamente','response' => $result]);
@@ -165,7 +165,7 @@ class Ventas extends CI_Controller {
       return null;
     }
 
-    $result = $this->ventas->getOrders();
+    $result = $this->sell->getOrders();
 
     echo json_encode(['orders' => $result]);
   }

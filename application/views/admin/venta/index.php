@@ -100,7 +100,9 @@
     vertical-align: top;
   }
 
-
+  .b-table .table th .th-wrap {
+    display: block!important;
+  }
 
   @media screen and (min-width: 769px) {
      #modalSessions .modal-card {
@@ -127,54 +129,44 @@
       <button @click="sessionsDialog = true" id="addOrderButton" class="button is-rounded">Añadir Venta</button>
       <div v-cloak class="card">
         <div v-cloak class="card-content">
-          <div v-cloak class="content">    
-            <table v-cloak class="table">
-              <thead v-cloak v-show="!ordersIsEmpty">
-                <tr v-cloak>
-                  <th>
-                    ID
-                  </th>
-                  <th>
-                    Fecha
-                  </th>
-                  <th>
-                    Cliente
-                  </th>
-                  <th>
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody v-cloak>
-                <tr v-cloak v-show="!ordersIsEmpty" v-for="(order,index) in orders">
-                  <td v-cloak>{{ order.id }}</td>
-                  <td v-cloak>{{ order.fecha | parseDate}}</td>
-                  <td v-cloak>{{ order.nombre }}</td>
-                  <td>
-                    <div class="actionContainer">
-                      <span
-                      class="icon clickable tooltip"
-                      data-tooltip="Editar"
-                      @click="openOrder(index)"
-                      >
-                        <i class="fas fa-edit"></i>
-                      </span>
+          <div v-cloak class="content">
+            <b-table :data="orders" :columns="columns_orders">
+
+              <template slot-scope="props">
+                <b-table-column field="id" label="ID" sortable>
+                  {{ props.row.id }}
+                </b-table-column>
+
+                <b-table-column field="fecha" label="Fecha" sortable>
+                  {{ props.row.fecha | parseDate }}
+                </b-table-column>
+
+                <b-table-column field="nombre" label="Cliente" sortable>
+                  {{ props.row.nombre }}
+                </b-table-column>
+
+                <b-table-column label="Acciones">
+                  <button class="button is-small" @click.prevent="openOrder(props.row.id)">
+                    <b-icon pack="fa" icon="edit" ></b-icon>
+                  </button>
+                </b-table-column>
+              </template>
+
+              <template slot="empty">
+                <section class="section">
+                    <div class="content has-text-grey has-text-centered">
+                        <p>Nada que mostrar aquí.</p>
                     </div>
-                  </td>
-                </tr>
-                <tr v-show="ordersIsEmpty">
-                  <td class="has-text-centered">
-                    Lo sentimos, no hay ventas registradas.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                </section>
+              </template>
+            
+            </b-table>
           </div>
         </div>
       </div>
 
       <!--
-      Modal
+        Modal form
       -->
 
       <div id="modalSessions" class="modal" :class="{'is-active': sessionsDialog}">
@@ -363,6 +355,18 @@
           </div>
         </transition>
       </div>
+
+      <!--
+        Modal file
+      -->
+
+      <b-modal :active.sync="fileDialog" :width="640" scroll="keep">
+        <div class="card">
+          <div class="card-content">
+          
+          </div>
+        </div>
+      </b-modal>
     </div>
   </section>
 </div>
@@ -382,8 +386,33 @@
         fecha: window.moment().format('YYYY-MM-DD'),
         cliente_id: null
       },
+      columns_orders: [
+        {
+          field: 'id',
+          label: 'ID',
+          width: '40',
+          numeric: true,
+          centered: true
+        },
+        {
+          field: 'fecha',
+          label: 'Fecha',
+          centered: true
+        },
+        {
+          field: 'nombre',
+          label: 'Cliente',
+          centered: true
+        },
+        {
+          field: 'acciones',
+          label: 'Acciones',
+          centered: true
+        },
+      ],
       sessions: [],
       sessionsDialog: false,
+      fileDialog: false,
       editmode: false,
       services: [],
       search: '',
@@ -450,9 +479,10 @@
         
         return response;
       },
-      openOrder: async function(index) {
+      openOrder: async function(id) {
+        let index = this.orders.findIndex(val => val.id == id)
         this.order = Object.assign({}, this.orders[index]);
-        await this.loadSessions(this.orders[index].id);
+        await this.loadSessions(id);
 
         this.sessions.forEach((val, index) => {
           this.changeServicePrice(index)

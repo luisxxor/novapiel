@@ -50,6 +50,10 @@
           Clientes
         </a>
 
+        <a class="navbar-item" href="<?PHP echo base_url('admin/agendamientos'); ?>">
+          Agendamientos
+        </a>
+
         <a class="navbar-item" href="<?PHP echo base_url('admin/ventas'); ?>">
           Ventas
         </a>

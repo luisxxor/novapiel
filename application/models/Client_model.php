@@ -21,7 +21,7 @@ class Client_model extends CI_Model {
   public function getAll() {
     $this->db->select('*');
     $this->db->from('clientes');
-    $this->db->order_by('nombre', 'desc');
+    $this->db->order_by('nombre', 'asc');
     $query = $this->db->get();
     $result = $query->result();
     return $result;
