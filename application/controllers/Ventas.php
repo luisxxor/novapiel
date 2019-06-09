@@ -17,21 +17,8 @@ class Ventas extends CI_Controller {
     $data = array('content' => 'admin/venta/index','title' => 'Novapiel - Ventas');
     $this->load->view('admin/template',$data);
   }
-
-  public function getClientOrders() {
-    if ($this->session->userdata('is_authenticated') == FALSE) {
-      echo json_encode(['status' => '403','message' => 'Permission Denied']);
-      return null;
-    }
-
-    $id = $this->input->get('id');
-
-    $result = $this->sell->getClientOrders($id);
-
-    echo json_encode(['orders' => $result]);
-  }
     
-  public function getOrderSessions() {
+  public function getSessions() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -39,26 +26,10 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->get('id');
 
-    $result = $this->sell->getOrderSessions($id);
+    $result = $this->sell->getSessions($id);
 
+    header('Content-Type: application/json');
     echo json_encode(['sessions' => $result]);
-  }
-  
-  public function create() {
-    if ($this->session->userdata('is_authenticated') == FALSE) {
-      echo json_encode(['status' => '403','message' => 'Permission Denied']);
-      return null;
-    }
-
-    $data = json_decode($this->input->post('ventas_form'),true);
-
-    $result = $this->client->form_insert($data);
-
-    if($result['code'] == 0) {
-      echo json_encode(['status' => '201', 'message' => 'Venta creada exitosamente']);
-    } else {
-      echo json_encode(['status' => '500', 'message' => 'Venta no creada, ha ocurrido un error']);
-    }
   }
 
   public function updateOrCreateOrderSessions() {
@@ -67,17 +38,19 @@ class Ventas extends CI_Controller {
       return null;
     }
     
-    $data = json_decode($this->input->post('ventas_form'),true);
+    $data = json_decode($this->input->post('sell_form'),true);
 
-    if($data['order']['id'] == null) {
-      $data['order']['id'] = $this->sell->createOrder($data['order']);
+    if($data['sell']['id'] == null) {
+      $data['sell']['id'] = $this->sell->createSell($data['sell']);
+    } else {
+      $this->sell->updateSell($data['sell']);
     }
 
     $createSessions = [];
     $updateSessions = [];
 
     foreach($data['sessions'] as $val) {
-      $val['orden_id'] = $data['order']['id'];
+      $val['orden_id'] = $data['sell']['id'];
       if($val['id'] == NULL) {
         $createSessions[] = $val;
       } else {
@@ -93,35 +66,6 @@ class Ventas extends CI_Controller {
       echo json_encode(['status' => '200', 'message' => 'Sesiones actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     } else {
       echo json_encode(['status' => '500', 'message' => 'Sesiones no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
-    }
-  }
-
-  public function updateOrCreateClientOrders() {
-    if ($this->session->userdata('is_authenticated') == FALSE) {
-      echo json_encode(['status' => '403','message' => 'Permission Denied']);
-      return null;
-    }
-
-    $data = json_decode($this->input->post('ventas_form'),true);
-    $createOrders = [];
-    $updateOrders = [];
-
-    foreach($data['orders'] as $val) {
-      if($val['id'] == NULL) {
-        $createOrders[] = $val;
-      } else {
-        $updateOrders[] = $val;
-      }
-    }
-
-    $resultCreate = count($createOrders) > 0 ? $this->sell->createOrders($createOrders) : array('code' => 0);
-
-    $resultUpdate = count($updateOrders) > 0 ? $this->sell->updateOrders($updateOrders) : array('code' => 0);
-
-    if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0) {
-      echo json_encode(['status' => '200', 'message' => 'Ordenes actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
-    } else {
-      echo json_encode(['status' => '500', 'message' => 'Ordenes no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     }
   }
 
@@ -142,7 +86,7 @@ class Ventas extends CI_Controller {
     }
   }
 
-  public function deleteOrder() {
+  public function deleteSell() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -150,7 +94,7 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->post('id');
 
-    $result = $this->sell->deleteOrder($id);
+    $result = $this->sell->deleteSell($id);
 
     if($result['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Orden de venta eliminada correctamente','response' => $result]);
@@ -159,14 +103,77 @@ class Ventas extends CI_Controller {
     }
   }
 
-  public function getOrders() {
+  public function getSells() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
     }
 
-    $result = $this->sell->getOrders();
+    $data = $this->sell->getSells();
 
-    echo json_encode(['orders' => $result]);
+
+    foreach ($data as &$sell) {
+      $sell['agendamientos'] = boolval($sell['agendamientos']);
+    }
+
+    echo json_encode(['sells' => $data]);
   }
+
+  public function getAllPaidSessions() {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $result = $this->sell->getAllPaidSessions();
+    
+    header('Content-Type: application/json');
+    echo json_encode($result);
+  }
+
+  public function getUnpaidSessions() {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $id = $this->input->get('id');
+
+    $result = $this->sell->getUnpaidSessions($id);
+    
+    header('Content-Type: application/json');
+    $result->unpaid_sessions = intval($result->unpaid_sessions);
+    echo json_encode($result);
+
+  }
+
+  public function getAvailable() {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $date = $this->input->get('date');
+    $order_id = $this->input->get('order_id');
+    $result = $this->sell->getAppointedDates($date,$order_id);
+
+    $formattedResult = [];
+    
+    foreach($result as $r) {
+      $formattedResult[] = $r['hora'];
+    }
+
+    $hours = [];
+    for($i = 0; $i < 24; $i++) {
+      if(in_array($i, $formattedResult)) {
+        continue;
+      }
+
+      $text = $i < 10 ? '0'.$i.':00' : $i.':00';
+      $hours[] = ['value' => $i, 'text' => $text];
+    };
+
+    header('Content-Type: application/json');
+    echo json_encode($hours);
+  }  
 }

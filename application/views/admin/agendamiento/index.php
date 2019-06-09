@@ -161,6 +161,9 @@
                   <button class="button is-small" @click.prevent="openAppointment(props.row.id)">
                     <b-icon pack="fa" icon="edit" ></b-icon>
                   </button>
+                  <button class="button is-small" @click.prevent="deleteAppointment(props.row.id)">
+                    <b-icon pack="fa" icon="trash" ></b-icon>
+                  </button>
                 </b-table-column>
               </template>
 
@@ -280,6 +283,9 @@
                     <th>
                       Pagado
                     </th>
+                    <th v-if="atLeastOneSessionPaid">
+                      Fecha Pago
+                    </th>
                     <th>
                     </th>
                   </tr>
@@ -288,7 +294,7 @@
                   <tr v-cloak v-show="!sessionsIsEmpty" v-for="(session,index) in sessions">
                     <td v-cloak>
                       <b-field>
-                        <flat-pickr @on-change="loadAvailableHours(index)"  v-model="session.fecha" :config="config"></flat-pickr>
+                        <flat-pickr v-validate="'required'" @on-change="loadAvailableHours(index)"  v-model="session.fecha" :config="config"></flat-pickr>
                       </b-field>
                     </td>
                     <td v-cloak>
@@ -297,7 +303,7 @@
                         type="is-danger"
                         message="Something went wrong with this field"
                       >
-                        <b-select v-model.number="session.hora" @focus="loadAvailableHours(index)" :name="`session_hour_${index}`" expanded placeholder="Hora">
+                        <b-select v-validate="'required'" v-model.number="session.hora" @focus="loadAvailableHours(index)" :name="`session_hour_${index}`" expanded placeholder="Hora">
                           <option
                             v-for="(hour, h_index) in sessions[index].available_hours"
                             :value="hour.value"
@@ -319,6 +325,11 @@
                       <div class="field">
                         <b-switch v-model.boolean="session.pagado"></b-switch>
                       </div>
+                    </td>
+                    <td v-cloak v-if="atLeastOneSessionPaid">
+                      <b-field v-if="session.pagado">
+                        <flat-pickr v-model="session.fecha_pago" :config="config"></flat-pickr>
+                      </b-field>
                     </td>
                     <td>
                       <div>
@@ -344,7 +355,7 @@
             </section>
             <footer class="modal-card-foot">
               <button @click.prevent="saveSessions" :disabled="invalidForm" class="button is-primary">Aceptar</button>
-              <button @click.prevent="sessionsDialog = false" class="button">Cancelar</button>
+              <button @click.prevent="sessionsDialog = false" class="button">Cerrar</button>
             </footer>
           </div>
         </transition>
@@ -383,7 +394,7 @@
         precio: 0,
         servicio_id: null,
         descuento: 0,
-        ventas: false
+        ventas: false,
       },
       columns_appointments: [
         {
@@ -527,10 +538,11 @@
           if (result.value) {
             if(this.sessions[index].id == null) {
               this.sessions.pop(index);
+              this.changeServicePrice();
             } else {
               let data = new FormData();
               data.append('id',this.sessions[index].id);
-              axios.post('ventas/deleteSession',data)
+              axios.post('agendamiento/deleteSession',data)
               .then(response => {
                 if(response) {
                   Swal(
@@ -539,6 +551,7 @@
                     'success'
                   ).then(response => {
                     this.loadSessions(this.appointment.id);
+                    this.changeServicePrice();
                   })
                 } else {
                   Swal(
@@ -547,6 +560,7 @@
                     'warning'
                   ).then(response => {
                     this.loadSessions(this.appointment.id);
+                    this.changeServicePrice();
                   })
                 }
               })
@@ -562,10 +576,10 @@
           }
         })
       },
-      deleteOrder(index) {
+      deleteAppointment(id) {
         Swal({
           title: '¿Estás seguro?',
-          text: "¡La orden de venta y las sesiones que tenga registradas serán eliminadas para siempre!",
+          text: "¡Este agendamiento y las sesiones que tenga registradas serán eliminadas para siempre!",
           type: 'warning',
           showCancelButton: true,
           confirmButtonText: '¡Si! ¡eliminar!',
@@ -573,32 +587,28 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            if(this.appointments[index].id == null) {
-              this.appointments.pop(index);
-            } else {
-              let data = new FormData();
-              data.append('id',this.appointments[index].id);
-              axios.post(`ventas/deleteOrder`,data)
-              .then(response => {
-                if(response) {
-                  Swal(
-                    '¡Eliminado!',
-                    'La orden de venta ha sido eliminada.',
-                    'success'
-                  ).then(response => {
-                    
-                  })
-                } else {
-                  Swal(
-                    'Error',
-                    'Ha ocurrido un error.',
-                    'warning'
-                  ).then(response => {
-                  
-                  })
-                }
-              })
-            }
+            let data = new FormData();
+            data.append('id',id);
+            axios.post(`agendamiento/deleteAppointment`,data)
+            .then(response => {
+              if(response) {
+                Swal(
+                  '¡Eliminado!',
+                  'El agendamiento ha sido eliminado.',
+                  'success'
+                ).then(response => {
+                  this.loadAppointments()
+                })
+              } else {
+                Swal(
+                  'Error',
+                  'Ha ocurrido un error.',
+                  'warning'
+                ).then(response => {
+                
+                })
+              }
+            })
           } else if (
             result.dismiss === Swal.DismissReason.cancel
           ) {
@@ -620,21 +630,24 @@
           this.appointment_search = '';
           setTimeout(() => {
             this.errors.clear();
-          },200)
+          },50)
         }, 300);
+        this.loadAppointments();
       },
       saveSessions() {
         this.$validator.validate().then(result => {
           if(result) {
             let data = new FormData();
             let sessions = this.sessions.map( val => {
+              let fecha_pago = val.pagado ? val.fecha_pago : null;
               return {
                 "id": val.id,
                 "orden_id": val.orden_id,
                 "realizado": val.realizado,
                 "pagado": val.pagado,
                 "fecha": val.fecha,
-                "hora": val.hora
+                "hora": val.hora,
+                "fecha_pago": val.fecha_pago
               }
             })
             data.append('appointment_form',JSON.stringify({ appointment: this.appointment, sessions: sessions}));
@@ -647,7 +660,6 @@
                   text: 'Operación realizada con éxito'
                 })
                 this.sessionsDialog  = false;
-                this.loadAppointments();
                 this.sessionsDialogClose();
               } else {
                 Swal.fire({
@@ -668,7 +680,8 @@
           pagado: false,
           realizado: false,
           available_hours: [{}],
-          id: null
+          id: null,
+          fecha_pago: null
         })
         this.loadAvailableHours(this.sessions.length - 1);
         this.changeServicePrice();

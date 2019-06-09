@@ -113,7 +113,7 @@
           </li>
         </ul>
         <div class="navbar-buttons mbr-section-btn">
-          <a class="btn btn-sm btn-primary display-4" href="https://api.whatsapp.com/send?phone=56998955831&text=Hola!%20Me%20pueden%20ayudar?" target="_blank">
+          <a class="btn btn-sm btn-primary display-4" href="https://api.whatsapp.com/send?phone=56932522012&text=Hola!%20Me%20pueden%20ayudar?" target="_blank">
             <span class="socicon socicon-whatsapp mbr-iconfont mbr-iconfont-btn"></span>
             Whatsapp!
           </a>
@@ -131,7 +131,7 @@
           <p class="mbr-text"><strong>Direccion</strong>&nbsp;<br>
             <br>Echeñique 5839,
             <br>Oficina 311, La Reina, Santiago<br>
-            <br><strong>Contacto</strong><br>Email: esteticanvovapiel@gmail.com<br>Telefono:<br>+569-98955831
+            <br><strong>Contacto</strong><br>Email: esteticanvovapiel@gmail.com<br>Telefono:<br>+56932522012
           </p>
         </div>
         <div class="col-12 col-md-3 mbr-fonts-style display-7">

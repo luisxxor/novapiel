@@ -26,14 +26,14 @@ class Agendamiento extends CI_Controller {
     }
 
 
-    $data['appointments'] = $this->appointment->getAppointments();
+    $data = $this->appointment->getAppointments();
 
-    foreach ($data['appointments'] as &$appointment) {
+    foreach ($data as &$appointment) {
       $appointment['ventas'] = boolval($appointment['ventas']);
     }
 
     header('Content-Type: application/json');
-    echo json_encode(['appointments' => $data['appointments']]);
+    echo json_encode(['appointments' => $data ]);
 
   }
 
@@ -87,25 +87,8 @@ class Agendamiento extends CI_Controller {
       echo json_encode(['status' => '500', 'message' => 'Sesiones no actualizadas, ha ocurrido un error', 'responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
     }
   }
-  
-  public function update() {
-    if ($this->session->userdata('is_authenticated') == FALSE) {
-      echo json_encode(['status' => '403','message' => 'Permission Denied']);
-      return null;
-    }
 
-    $data = json_decode($this->input->post('appointment_form'),true);
-
-    $result = $this->appointment->form_update($data);
-
-    if($result['code'] == 0) {
-      echo json_encode(['status' => '200', 'message' => 'Agendamiento actualizado exitosamente']);
-    } else {
-      echo json_encode(['status' => '500', 'message' => 'Agendamiento no actualizado, ha ocurrido un error', 'response' => $result]);
-    }
-  }
-
-  public function delete() {
+  public function deleteSession() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -113,12 +96,31 @@ class Agendamiento extends CI_Controller {
 
     $id = $this->input->post('id');
 
-    $result = $this->appointment->delete($id);
+    $result = $this->appointment->deleteSession($id);
+
+    $result_clean = $this->appointment->deleteOrdersThatDontHaveSessions();
+
+    if($result['code'] == 0 && $result_clean['code'] == 0) {
+      echo json_encode(['status' => '200', 'message' => 'Sesion eliminada correctamente','response' => $result]);
+    } else {
+      echo json_encode(['status' => '500', 'message' => 'Sesion no eliminada, ha ocurrido un error', 'response' => $result]);
+    }
+  }
+
+  public function deleteAppointment() {
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+    $id = $this->input->post('id');
+
+    $result = $this->appointment->deleteAppointment($id);
 
     if($result['code'] == 0) {
-      echo json_encode(['status' => '200', 'message' => 'Agendamiento eliminado correctamente']);
+      echo json_encode(['status' => '200', 'message' => 'Orden de venta eliminada correctamente','response' => $result]);
     } else {
-      echo json_encode(['status' => '500', 'message' => 'Agendamiento no eliminado, ha ocurrido un error', 'response' => $result]);
+      echo json_encode(['status' => '500', 'message' => 'Orden de venta no eliminada, ha ocurrido un error', 'response' => $result]);
     }
   }
 

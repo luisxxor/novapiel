@@ -16,7 +16,7 @@
 
   .table thead tr th,
   .table tbody tr td {
-    text-align: center;
+    text-align: center!important;
   }
 
   #pageTitle {
@@ -89,7 +89,6 @@
     align-items: center;
     border: 1px solid #DBDBDB;
     border-radius: 4px;
-    /* box-shadow: none; */
     display: inline-flex;
     font-size: 1rem;
     height: 2.25em;
@@ -125,42 +124,114 @@
 <div id="app">
   <section>
     <div class="container">
-      <h2 id="pageTitle" class="title is-2 has-text-centered">Listado de Ventas</h2>
+      <h2 id="pageTitle" class="title is-2 has-text-centered">Ventas</h2>
       <button @click="sessionsDialog = true" id="addOrderButton" class="button is-rounded">Añadir Venta</button>
       <div v-cloak class="card">
         <div v-cloak class="card-content">
           <div v-cloak class="content">
-            <b-table :data="orders" :columns="columns_orders">
+            <b-tabs v-model="activeTab">
+              <b-tab-item label="Ventas por pedido">
+                <b-table :data="sells">
+                  <template slot-scope="props">
+                    <b-table-column field="id" label="ID" sortable>
+                      {{ props.row.id }}
+                    </b-table-column>
 
-              <template slot-scope="props">
-                <b-table-column field="id" label="ID" sortable>
-                  {{ props.row.id }}
-                </b-table-column>
+                    <b-table-column field="fecha" label="Fecha" sortable>
+                      {{ props.row.fecha | parseDate }}
+                    </b-table-column>
 
-                <b-table-column field="fecha" label="Fecha" sortable>
-                  {{ props.row.fecha | parseDate }}
-                </b-table-column>
+                    <b-table-column field="nombre" label="Cliente" sortable>
+                      {{ props.row.nombre }}
+                    </b-table-column>
 
-                <b-table-column field="nombre" label="Cliente" sortable>
-                  {{ props.row.nombre }}
-                </b-table-column>
+                    <b-table-column field="titulo" label="Servicio" sortable>
+                      {{ props.row.titulo }}
+                    </b-table-column>
 
-                <b-table-column label="Acciones">
-                  <button class="button is-small" @click.prevent="openOrder(props.row.id)">
-                    <b-icon pack="fa" icon="edit" ></b-icon>
-                  </button>
-                </b-table-column>
-              </template>
+                    <b-table-column field="precio" label="Precio" sortable>
+                      {{ props.row.precio }}
+                    </b-table-column>
 
-              <template slot="empty">
-                <section class="section">
-                    <div class="content has-text-grey has-text-centered">
+                    <b-table-column field="descuento" label="Descuento" sortable>
+                      {{ props.row.descuento }}
+                    </b-table-column>
+
+                    <b-table-column label="Acciones">
+                      <button class="button is-small" @click.prevent="openSell(props.row.id)">
+                        <b-icon pack="fa" icon="edit" ></b-icon>
+                      </button>
+                      <button class="button is-small" @click.prevent="deleteSell(props.row.id)">
+                        <b-icon pack="fa" icon="trash" ></b-icon>
+                      </button>
+                    </b-table-column>
+                  </template>
+
+                  <template slot="empty">
+                    <section class="section">
+                      <div class="content has-text-grey has-text-centered">
                         <p>Nada que mostrar aquí.</p>
+                      </div>
+                    </section>
+                  </template>
+                
+                </b-table>
+              </b-tab-item>
+
+              <b-tab-item label="Ventas por sesiones">
+                <b-field grouped>
+                  <b-field label="Desde">
+                    <flat-pickr v-model="per_session.min_date" :config="min_date_config"></flat-pickr>
+                  </b-field>
+
+                  <b-field label="Hasta">
+                    <flat-pickr v-model="per_session.max_date" :config="max_date_config"></flat-pickr>
+                  </b-field>
+
+                </b-field>
+                <b-table :data="filteredPaidSessions">
+                  <template slot-scope="props">
+                    <b-table-column field="id" label="ID" sortable>
+                      {{ props.row.id }}
+                    </b-table-column>
+
+                    <b-table-column field="cliente" label="Cliente" sortable>
+                      {{ props.row.cliente }}
+                    </b-table-column>
+
+                    <b-table-column field="fecha_pago" label="Fecha de Pago" sortable>
+                      {{ props.row.fecha_pago | parseDate }}
+                    </b-table-column>
+
+                    <b-table-column field="servicio" label="Servicio" sortable>
+                      {{ props.row.servicio }}
+                    </b-table-column>
+
+                    <b-table-column field="precio" label="Precio" sortable>
+                      {{ props.row.precio }}
+                    </b-table-column>
+
+                    <b-table-column field="realizado" label="¿Servicio realizado?" sortable>
+                      {{ props.row.realizado | parseBool }}
+                    </b-table-column>
+                  </template>
+
+                  <template slot="empty">
+                    <section class="section">
+                      <div class="content has-text-grey has-text-centered">
+                        <p>No hay pagos en este rango de fechas: {{ this.per_session.min_date | parseDate }} - {{ this.per_session.max_date | parseDate }}.</p>
+                      </div>
+                    </section>
+                  </template>
+                  <template slot="footer">
+                    <div class="has-text-center">
+                      Total en el rango seleccionado: {{ filteredTotal }} CLP
                     </div>
-                </section>
-              </template>
-            
-            </b-table>
+                  </template>
+                </b-table>
+              </b-tab-item>
+            </b-tabs>
+
           </div>
         </div>
       </div>
@@ -180,46 +251,99 @@
               <button @click="sessionsDialog = false" class="delete" aria-label="close"></button>
             </header>
             <section class="modal-card-body" style="overflow-x: hidden;">
+              <b-field label="Fecha">
+                <b-input type="text"
+                  :value="sell.fecha | parseDate"
+                  disabled
+                >
+                </b-input>
+              </b-field>
               <b-field label="Cliente">
+                <b-autocomplete
+                  ref="autocomplete_client"
+                  :data.sync="clientsFiltered"
+                  v-validate="'required'"
+                  field="nombre"
+                  v-model="sell_search"
+                  placeholder="Selecciona un cliente"
+                  name="client_sells"
+                  :open-on-focus="true"
+                  @select="option => sell.cliente_id = option ? option.id : null"
+                >
+                  <template slot="header">
+                    <small v-if="sell_search.length > 0"> Resultados de <i>{{ sell_search }}</i> </small>
+                    <small v-else> Mostrando todos los clientes </small>
+                    <hr>
+                  </template>
+                  <template slot="empty">No hay clientes que contengan: "{{ sell_search }}" </template>
+                </b-autocomplete>
+              </b-field>
+              <p class="help is-danger" v-if="errors.first(`client_sell`)">Debe seleccionar un cliente</p>
+              <b-field label="Servicio">
                 <b-select
                   v-validate="'required'"
-                  v-model="order.cliente_id"
-                  placeholder="Selecciona un cliente"
+                  v-model="sell.servicio_id"
+                  placeholder="Selecciona un servicio"
+                  name="service_sell"
                   expanded
+                  @input="changeServicePrice"
                 >
                   <option
-                    v-for="client in clients"
-                    :value="client.id"
-                    :key="`client_${client.id}`">
-                    {{ client.nombre }}
+                    v-for="service in services"
+                    :value="service.id"
+                    :key="`service_${service.id}`">
+                    {{ service.title }}
                   </option>
                 </b-select>
               </b-field>
-              <p class="help is-danger" v-if="errors.first(`client_order`)">Debe seleccionar un cliente</p>
-              <b-field label="Fecha">
-                <flat-pickr v-model="order.fecha" :config="config"></flat-pickr>
+              <p class="help is-danger" v-if="errors.first(`service_sell`)">Debe seleccionar un servicio</p>
+              <b-field label="Precio">
+                <b-input type="number" disabled :value.sync="sell.precio"></b-input>
+              </b-field>
+              <b-field label="Descuento">
+                <p class="control has-icons-left">
+                  <input
+                    name="sell_discount"
+                    class="input"
+                    :class="{'is-danger': errors.first(`sell_discount`)}"
+                    type="number"
+                    step="0.01"
+                    max="100"
+                    v-model.number="sell.descuento"
+                    v-validate="'min_value:0'"
+                    placeholder="Descuento"
+                    @input="changeServicePrice"
+                  >
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-percent"></i>
+                  </span>
+                </p>
+                <p class="help is-danger" v-if="errors.first(`sell_discount`)">Inserte un porcentaje válido.</p>
               </b-field>
               <hr>
+              <b-message :active.sync="atLeastOneSessionUnpaid" type="is-info" has-icon>
+                Todas las sesiones que estén marcadas como no pagadas, ya no serán listadas como ventas sino como agendamientos.
+              </b-message>
               <table class="table is-fullwidth">
                 <thead v-cloak v-show="!sessionsIsEmpty">
                   <tr v-cloak>
                     <th>
-                      Servicio
-                    </th>
-                    <th id="service_price_header">
-                      Precio
-                    </th>
-                    <th style="width: 90px;">
-                      Descuento
-                    </th>
-                    <th id="total_price_header">
-                      Total
-                    </th>
-                    <th style="width: 90px;">
-                      Sesiones
+                      Fecha
                     </th>
                     <th>
-                      Finalizadas
+                      Hora
+                    </th>
+                    <th>
+                      Precio
+                    </th>
+                    <th>
+                      Pagado
+                    </th>
+                    <th>
+                      Fecha Pago
+                    </th>
+                    <th>
+                      Realizado
                     </th>
                     <th>
                     </th>
@@ -228,102 +352,47 @@
                 <tbody v-cloak>
                   <tr v-cloak v-show="!sessionsIsEmpty" v-for="(session,index) in sessions">
                     <td v-cloak>
-                      <div class="field">
-                        <div class="select" :class="{'is-danger': errors.first(`service_select_${index}`)}">
-                          <select
-                            :name="`service_select_${index}`"
-                            v-validate="'required'"
-                            v-model="session.servicio_id"
-                            @change="changeServicePrice(index)"
-                          >
-                            <option v-if="services.length > 0" :value="service.id" v-for="(service,service_index) in services">{{ service.title }}</option>
-                            <option v-if="services.length == 0" value="">No hay servicios registrados.</option>
-                          </select>
-                        </div>
-                        <p class="help is-danger" v-if="errors.first(`service_select_${index}`)">Debe seleccionar un servicio</p>
-                      </div>
+                      <b-field>
+                        <flat-pickr @on-change="loadAvailableHours(index)"  v-model="session.fecha" :config="config"></flat-pickr>
+                      </b-field>
                     </td>
-                    <td v-cloak class="service_price_field">
-                      <div class="field">
-                        <input
-                          :name="`service_price_${index}`"
-                          class="input"
-                          :class="{'is-danger': errors.first(`service_price_${index}`)}"
-                          type="number"
-                          v-model.number="session.precio_servicio"
-                          v-validate="'min_value:0'"
-                          placeholder="Precio"
-                          readonly
-                        >
-                        <p class="help is-danger" v-if="errors.first(`service_price_${index}`)">No se permiten números negativos</p>
+                    <td v-cloak>
+                      <div class="field" 
+                        label="Error"
+                        type="is-danger"
+                        message="Something went wrong with this field"
+                      >
+                        <b-select v-model.number="session.hora" @focus="loadAvailableHours(index)" :name="`session_hour_${index}`" expanded placeholder="Hora">
+                          <option
+                            v-for="(hour, h_index) in sessions[index].available_hours"
+                            :value="hour.value"
+                            :key="`hour_session_${index}_${h_index}`"
+                          >{{ hour.text }}</option>
+                        </b-select>
+                        <p class="help is-danger" v-if="session.available_hours.length < 1"> No hay disponibilidad para esta fecha </p>
+                        <p class="help is-danger" v-if="errors.first(`session_hour_${index}`)">Debe seleccionar una hora.</p>
                       </div>
                     </td>
                     <td v-cloak style="min-width: 125px;">
-                      <div class="field">
-                        <p class="control has-icons-left">
-                          <input
-                            :name="`session_discount_${index}`"
-                            class="input"
-                            :class="{'is-danger': errors.first(`session_discount_${index}`)}"
-                            type="number"
-                            step="0.01"
-                            max="100"
-                            v-model.number="session.descuento"
-                            v-validate="'min_value:0'"
-                            placeholder="Descuento"
-                            @input="calculateTotal"
-                          >
-                          <span class="icon is-small is-left">
-                            <i class="fas fa-percent"></i>
-                          </span>
-                        </p>
-                        <p class="help is-danger" v-if="errors.first(`session_discount_${index}`)">Inserte un porcentaje válido.</p>
-                      </div>
-                    </td>
-                    <td v-cloak class="total_price_field">
-                      <div class="field">
-                        <input
-                          :name="`total_price_${index}`"
-                          class="input"
-                          :class="{'is-danger': errors.first(`total_price_${index}`)}"
-                          type="number"
-                          v-model.number="session.precio"
-                          v-validate="'min_value:0'"
-                          placeholder="Precio total"
-                          v-model="session.precio"
-                          readonly
-                        >
-                        <p class="help is-danger" v-if="errors.first(`total_price_${index}`)">No se permiten números negativos</p>
-                      </div>
+                      <b-field>
+                        <b-input v-model.number="sell.precioPorSesion" type="number" disabled>
+                          
+                        </b-input>
+                      </b-field>
                     </td>
                     <td v-cloak>
                       <div class="field">
-                        <input
-                          :name="`session_qty_${index}`"
-                          class="input"
-                          :class="{'is-danger': errors.first(`session_qty_${index}`)}"
-                          type="number"
-                          v-model.number="session.sesiones"
-                          v-validate="'min_value:1'"
-                          placeholder="Sesiones"
-                          @input="calculateTotal"
-                        >
-                        <p class="help is-danger" v-if="errors.first(`session_qty_${index}`)">Se debe colocar al menos 1 sesión</p>
+                        <b-switch v-model.boolean="session.pagado"></b-switch>
                       </div>
                     </td>
-                    <td v-cloak stlye="padding-left: 0;">
-                      <div class="field">                        
-                        <div class="select" :class="{'is-danger': errors.first(`session_finished_${index}`)}">
-                          <select
-                            :name="`session_finished_${index}`"
-                            v-model.number="session.finalizadas"
-                            v-validate="'required'"
-                          >
-                            <option>0</option>
-                            <option v-for="i in session.sesiones" :key="`session_finished_${index}_${i}`">{{ i }}</option>
-                          </select>
-                        </div>
-                        <p class="help is-danger" v-if="errors.first(`session_finished_${index}`)">Seleccione una opción válida.</p>
+                    <td v-cloak>
+                      <b-field>
+                        <flat-pickr :disabled="!session.pagado" v-model="session.fecha_pago" :config="config"></flat-pickr>
+                      </b-field>
+                    </td>
+                    <td v-cloak>
+                      <div class="field">
+                        <b-switch v-model.boolean="session.realizado"></b-switch>
                       </div>
                     </td>
                     <td>
@@ -340,7 +409,7 @@
                   </tr>
                   <tr v-show="sessionsIsEmpty">
                     <td class="has-text-centered">
-                      Esta orden de venta está vacía.
+                      Agregue al menos una sesión del servicio.
                     </td>
                   </tr>
                 </tbody>
@@ -349,8 +418,8 @@
               <button @click="newSession" class="button">Añadir Sesión</button>
             </section>
             <footer class="modal-card-foot">
-              <button @click.prevent="saveOrderSessions" :disabled="invalidForm" class="button is-primary">Aceptar</button>
-              <button @click.prevent="sessionsDialog = false" class="button">Cancelar</button>
+              <button @click.prevent="saveSessions" :disabled="invalidForm" class="button is-primary">Aceptar</button>
+              <button @click.prevent="sessionsDialog = false" class="button">Cerrar</button>
             </footer>
           </div>
         </transition>
@@ -359,14 +428,6 @@
       <!--
         Modal file
       -->
-
-      <b-modal :active.sync="fileDialog" :width="640" scroll="keep">
-        <div class="card">
-          <div class="card-content">
-          
-          </div>
-        </div>
-      </b-modal>
     </div>
   </section>
 </div>
@@ -380,39 +441,20 @@
     el: '#app',
     data: {
       clients: [],
-      orders: [],
-      order: {
+      allPaidSessions: [],
+      sells: [],
+      sell_search: '',
+      sell: {
         id: null,
         fecha: window.moment().format('YYYY-MM-DD'),
-        cliente_id: null
+        cliente_id: null,
+        precio: 0,
+        servicio_id: null,
+        descuento: 0,
+        ventas: false
       },
-      columns_orders: [
-        {
-          field: 'id',
-          label: 'ID',
-          width: '40',
-          numeric: true,
-          centered: true
-        },
-        {
-          field: 'fecha',
-          label: 'Fecha',
-          centered: true
-        },
-        {
-          field: 'nombre',
-          label: 'Cliente',
-          centered: true
-        },
-        {
-          field: 'acciones',
-          label: 'Acciones',
-          centered: true
-        },
-      ],
       sessions: [],
       sessionsDialog: false,
-      fileDialog: false,
       editmode: false,
       services: [],
       search: '',
@@ -421,73 +463,133 @@
         altFormat: 'd/m/Y',
         altInput: true,
         dateFormat: 'Y-m-d',
-        locale: flatpickr.l10ns.es        
+        locale: flatpickr.l10ns.es
+      },
+      activeTab: 0,
+      per_session: {
+        min_date: moment().startOf('month').format('YYYY-MM-DD'),
+        max_date: window.moment().format('YYYY-MM-DD')
       }              
     },
     computed: {
+      sellsIsEmpty() {
+        return this.sells.length == 0;
+      },
+      atLeastOneSessionUnpaid() {
+        return this.sessions.filter(v => !v.pagado).length > 0
+      },
       clientsIsEmpty() {
         return this.clients.length == 0;
       },
+      clientsFiltered() {
+        return this.clients.filter( val => val.nombre.toString().toLowerCase().indexOf(this.sell_search.toString().toLowerCase()) >= 0 )
+      },
+      filteredPaidSessions() {
+        return this.allPaidSessions.filter( val => {
+          let fecha_pago = moment(val.fecha_pago);
+          let min = moment(this.per_session.min_date);
+          let max = moment(this.per_session.max_date);
+          return fecha_pago.isSameOrAfter(min) && fecha_pago.isSameOrBefore(max);
+        })
+      },
+      filteredTotal() {
+       return this.filteredPaidSessions.length > 0 ? this.filteredPaidSessions.reduce( (old_val, new_val) => parseFloat(old_val.precio) + parseFloat(new_val.precio) ) : 0;
+      },
       invalidForm() {
-        return this.errors.all().length > 0;
+        return this.errors.all().length > 0 || this.sessions.length === 0;
       },
       id() {
         return this.form.id
       },
-      ordersIsEmpty() {
-        return this.orders.length == 0;
+      min_date_config() {
+        return {
+          wrap: true,
+          altFormat: 'd/m/Y',
+          altInput: true,
+          dateFormat: 'Y-m-d',
+          locale: flatpickr.l10ns.es,
+          maxDate: this.per_session.max_date
+        }
+      },
+      max_date_config() {
+        return {
+          wrap: true,
+          altFormat: 'd/m/Y',
+          altInput: true,
+          dateFormat: 'Y-m-d',
+          locale: flatpickr.l10ns.es,
+          minDate: this.per_session.min_date
+        }
       },
       sessionsIsEmpty() {
         return this.sessions.length == 0;
       },
       sessionsDialogTitle() {
-        return this.order.id ? 'Editar orden de venta' : 'Nueva orden de venta'
+        return this.sell.id ? 'Editar venta' : 'Nuevo venta'
       }
     },
     methods: {
-      changeServicePrice(index) {
-        let servicio_id = this.sessions[index].servicio_id;
-        let servicio = this.services.find(val => val.id == servicio_id);
+      changeServicePrice: async function() {
+        let { data: { unpaid_sessions }} = this.sell.ventas === false ? {data: {unpaid_sessions: 0}} : await axios.get(`ventas/getUnpaidSessions?id=${this.sell.id}`);
+        let paid_sessions = this.sessions.length;
 
-        this.sessions[index].precio_servicio = parseInt(servicio.price)
-        this.calculateTotal();
+        let service_price = this.services.find(v => v.id == this.sell.servicio_id).price;
+
+        let total = service_price * (unpaid_sessions + paid_sessions);
+
+        this.sell.precio = total - (total * parseFloat(this.sell.descuento) / 100)
+
+        this.sell.precioPorSesion = service_price - (service_price * parseFloat(this.sell.descuento) / 100)
       },
-      calculateTotal() {
-        this.sessions.forEach(val => {
-          val.precio = val.precio_servicio * val.sesiones;
-          val.precio = val.precio - (val.precio * val.descuento / 100)
-        })
-      },
-      loadOrders: async function() {
-        let response = await axios.get(`ventas/getOrders`)
+      loadSells: async function() {
+        let response = await axios.get(`ventas/getSells`)
         .then(response => {
-          this.orders = response.data.orders;
+          this.sells = response.data.sells;
 
         })
         return response;
       },
       loadSessions: async function(id) {
-        let response = axios.get(`ventas/getOrderSessions?id=${id}`)
+        let response = axios.get(`ventas/getSessions?id=${id}`)
         .then(response => {
           let sessions = response.data.sessions;
-          sessions.forEach(val => {
-            val.sesiones = parseInt(val.sesiones)
-            val.finalizadas = parseInt(val.finalizadas)
+          sessions.forEach( (val,index) => {
+            val.hora = parseInt(val.hora)
+            val.realizado = !!+val.realizado
+            val.pagado = !!+val.pagado;
+            val.available_hours = [];
           })
           this.sessions = sessions;
+
+          this.sessions.forEach( (val,index) => {
+            this.loadAvailableHours(index);
+          })
         })
         
         return response;
       },
-      openOrder: async function(id) {
-        let index = this.orders.findIndex(val => val.id == id)
-        this.order = Object.assign({}, this.orders[index]);
-        await this.loadSessions(id);
+      loadAllPaidSessions: async function() {
+        let response = axios.get(`ventas/getAllPaidSessions`)
+        .then(response => {
+          let allPaidSessions = response.data;
+          allPaidSessions.forEach( (val,index) => {
+            val.hora = parseInt(val.hora)
+            val.realizado = !!+val.realizado
+          })
 
-        this.sessions.forEach((val, index) => {
-          this.changeServicePrice(index)
+          this.allPaidSessions = allPaidSessions;
         })
         
+        return response;
+      },
+      openSell: async function(id) {
+        let index = this.sells.findIndex(val => val.id == id)
+        this.sell = Object.assign({}, this.sells[index]);
+        await this.loadSessions(id);
+
+        let selectedClient = this.clients.find( v => v.id == this.sell.cliente_id)
+        this.$refs.autocomplete_client.setSelected(selectedClient);
+        this.changeServicePrice();
         this.sessionsDialog = true;
       },
       deleteSession(index) {
@@ -503,6 +605,7 @@
           if (result.value) {
             if(this.sessions[index].id == null) {
               this.sessions.pop(index);
+              this.changeServicePrice();
             } else {
               let data = new FormData();
               data.append('id',this.sessions[index].id);
@@ -514,7 +617,8 @@
                     'La sesión ha sido eliminada.',
                     'success'
                   ).then(response => {
-                    this.loadSessions(this.order.id);
+                    this.loadSessions(this.sell.id);
+                    this.changeServicePrice();
                   })
                 } else {
                   Swal(
@@ -522,7 +626,8 @@
                     'Ha ocurrido un error.',
                     'warning'
                   ).then(response => {
-                    this.loadSessions(this.order.id);
+                    this.loadSessions(this.sell.id);
+                    this.changeServicePrice();
                   })
                 }
               })
@@ -538,10 +643,10 @@
           }
         })
       },
-      deleteOrder(index) {
+      deleteSell(id) {
         Swal({
           title: '¿Estás seguro?',
-          text: "¡La orden de venta y las sesiones que tenga registradas serán eliminadas para siempre!",
+          text: "¡Esta venta y las sesiones que tenga registradas serán eliminadas para siempre!",
           type: 'warning',
           showCancelButton: true,
           confirmButtonText: '¡Si! ¡eliminar!',
@@ -549,33 +654,28 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            if(this.orders[index].id == null) {
-              this.orders.pop(index);
-            } else {
-              let data = new FormData();
-              data.append('id',this.orders[index].id);
-              console.log(this.orders[index])
-              axios.post(`ventas/deleteOrder`,data)
-              .then(response => {
-                if(response) {
-                  Swal(
-                    '¡Eliminado!',
-                    'La orden de venta ha sido eliminada.',
-                    'success'
-                  ).then(response => {
-                    
-                  })
-                } else {
-                  Swal(
-                    'Error',
-                    'Ha ocurrido un error.',
-                    'warning'
-                  ).then(response => {
-                  
-                  })
-                }
-              })
-            }
+            let data = new FormData();
+            data.append('id',id);
+            axios.post(`ventas/deleteSell`,data)
+            .then(response => {
+              if(response) {
+                Swal(
+                  '¡Eliminado!',
+                  'La venta ha sido eliminada.',
+                  'success'
+                ).then(response => {
+                  this.loadSells()
+                })
+              } else {
+                Swal(
+                  'Error',
+                  'Ha ocurrido un error.',
+                  'warning'
+                ).then(response => {
+                
+                })
+              }
+            })
           } else if (
             result.dismiss === Swal.DismissReason.cancel
           ) {
@@ -592,27 +692,33 @@
         setTimeout(() => {
           this.editmode = false;
           this.sessions = [];
-          this.order = { id: null, fecha: window.moment().format('YYYY-MM-DD'), cliente_id: null };
+          this.sell = { id: null, fecha: window.moment().format('YYYY-MM-DD'), cliente_id: null, precio: 0, service_id: null, descuento: 0, ventas: false };
           this.search = '';
-          this.errors.clear();
+          this.sell_search = '';
+          setTimeout(() => {
+            this.errors.clear();
+          },200)
         }, 300);
+        this.loadSells();
+        this.loadAllPaidSessions();
       },
-      saveOrderSessions() {
+      saveSessions() {
         this.$validator.validate().then(result => {
           if(result) {
             let data = new FormData();
             let sessions = this.sessions.map( val => {
+              let fecha_pago = val.pagado ? val.fecha_pago : null;
               return {
                 "id": val.id,
                 "orden_id": val.orden_id,
-                "precio": val.precio,
-                "servicio_id": val.servicio_id,
-                "sesiones": val.sesiones,
-                "finalizadas": val.finalizadas,
-                "descuento": val.descuento
+                "realizado": val.realizado,
+                "pagado": val.pagado,
+                "fecha": val.fecha,
+                "hora": val.hora,
+                "fecha_pago": fecha_pago
               }
             })
-            data.append('ventas_form',JSON.stringify({ order: this.order, sessions: sessions}));
+            data.append('sell_form',JSON.stringify({ sell: this.sell, sessions: sessions}));
             axios.post('ventas/updateOrCreateOrderSessions',data)
             .then(response => {
               if(response.data.status == 200) {
@@ -622,7 +728,6 @@
                   text: 'Operación realizada con éxito'
                 })
                 this.sessionsDialog  = false;
-                this.loadClients();
                 this.sessionsDialogClose();
               } else {
                 Swal.fire({
@@ -637,15 +742,17 @@
       },
       newSession() {
         this.sessions.push({
-          servicio_id: null,
-          precio: 0,
-          descuento: 0,
-          precio_servicio: 0,
-          orden_id: this.order.id,
-          sesiones: 1,
-          finalizadas: 0,
-          id: null
+          sell_id: this.sell.id,
+          fecha: window.moment().format('YYYY-MM-DD'),
+          hora: null,
+          pagado: true,
+          realizado: false,
+          available_hours: [{}],
+          id: null,
+          fecha_pago: null
         })
+        this.loadAvailableHours(this.sessions.length - 1);
+        this.changeServicePrice();
       },
       loadClients() {
         axios.get('cliente/getClients')
@@ -657,6 +764,34 @@
         let a = axios.get('servicio/getServices')
         .then(({data: {services}}) => {
           this.services = services
+        })
+
+        return await a;
+      },
+      loadAvailableHours: async function(index) {
+        await this.$nextTick();
+
+        let a = axios.get(`ventas/getAvailable?date=${this.sessions[index].fecha}&order_id=${this.sell.id}`)
+        .then( response => {
+          let available_in_bd = response.data;
+
+          let sessions_same_day = this.sessions.filter( v => v.fecha === this.sessions[index].fecha );
+
+          if(sessions_same_day.length > 1) {
+            sessions_same_day.forEach(actual_session => {
+              let hours_same_day = [];
+              let original_index = this.sessions.indexOf(actual_session);
+              let filtered = sessions_same_day.filter(v => this.sessions.indexOf(v) !== original_index);
+              filtered.forEach(v => hours_same_day.push(v.hora))
+
+              available_hours = available_in_bd.filter(v => hours_same_day.indexOf(v.value) === -1);
+
+              this.sessions[original_index].available_hours = available_hours;
+            })
+          } else {
+            this.sessions[index].available_hours = available_in_bd;
+          }
+          
         })
 
         return await a;
@@ -679,9 +814,10 @@
     },
     created() {
       let t = this;
-      this.loadOrders();
+      this.loadSells();
       this.loadClients();
       this.loadServices();
+      this.loadAllPaidSessions();
     },
     filters: {
       parseDate(val) {
@@ -689,6 +825,9 @@
       },
       pending(val) {
         return !!+val ? 'Realizado' : 'Pendiente';
+      },
+      parseBool(val) {
+        return !!+val ? 'Si' : 'No';
       }
     }
   })

@@ -2,12 +2,12 @@
 class Appointment_model extends CI_Model {
 
   public function getAppointments() {
-    $result = $this->db->query("SELECT a.id id, a.fecha fecha, c.nombre nombre, c.id cliente_id, s.title titulo, s.id servicio_id , a.precio, a.descuento, (SELECT count(id) > 1 as exist FROM sesion WHERE pagado = TRUE AND orden_id = a.id) as ventas FROM agendamientos a LEFT JOIN servicios s ON a.servicio_id = s.id LEFT JOIN clientes c ON a.cliente_id = c.id");
+    $result = $this->db->query("SELECT a.id id, a.fecha fecha, c.nombre nombre, c.id cliente_id, s.title titulo, s.id servicio_id , a.precio, a.descuento, (SELECT count(ses.id) > 0 as exist FROM sesion ses WHERE ses.pagado = TRUE AND orden_id = a.id) as ventas FROM agendamientos a LEFT JOIN servicios s ON a.servicio_id = s.id LEFT JOIN clientes c ON a.cliente_id = c.id");
     return $result->result_array();
   }
 
   public function getSessions($id) {
-    $result = $this->db->query("SELECT s.id, s.fecha, s.hora, s.realizado, round(a.precio/(SELECT COUNT(id) FROM `sesion` WHERE orden_id = 3), 2) as precio FROM sesion s LEFT JOIN agendamientos a ON a.id = s.orden_id WHERE orden_id = $id AND s.pagado = FALSE");
+    $result = $this->db->query("SELECT s.id, s.fecha, s.hora, s.fecha_pago ,round(a.precio/(SELECT COUNT(id) FROM `sesion` WHERE orden_id = $id), 2) as precio FROM sesion s LEFT JOIN agendamientos a ON a.id = s.orden_id WHERE orden_id = $id AND s.pagado = FALSE");
 
 
     return $result->result_array();
@@ -36,6 +36,12 @@ class Appointment_model extends CI_Model {
     return $this->db->insert_id();
   }
 
+  public function deleteAppointment($id) {
+    $this->db->where('id', $id);
+    $this->db->delete('orden');
+    return $this->db->error();
+  }
+
   public function updateAppointment($data) {
     $this->db->set('cliente_id',$data['cliente_id']);
     $this->db->set('fecha',$data['fecha']);
@@ -60,5 +66,16 @@ class Appointment_model extends CI_Model {
     $this->db->where('fecha',$date);
     $this->db->where('orden_id !=',$order_id);
     return $this->db->get()->result_array();
+  }
+
+  public function deleteSession($id) {
+    $this->db->where('id', $id);
+    $this->db->delete('sesion');
+    return $this->db->error();
+  }
+
+  public function deleteOrdersThatDontHaveSessions() {
+    $this->db->query("DELETE o FROM orden o LEFT JOIN sesion s ON o.id = s.orden_id WHERE s.id IS NULL");
+    return $this->db->error();
   }
 }
