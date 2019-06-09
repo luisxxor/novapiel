@@ -20,6 +20,12 @@ class Servicio extends CI_Controller {
   }
 
   function getServices() {
+
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
     $data['services'] = $this->service->getAll();
     header('Content-Type: application/json');
     echo json_encode(['services' => $data['services']]);

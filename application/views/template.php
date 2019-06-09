@@ -113,7 +113,7 @@
           </li>
         </ul>
         <div class="navbar-buttons mbr-section-btn">
-          <a class="btn btn-sm btn-primary display-4" href="https://api.whatsapp.com/send?phone=56998955831&text=Hola!%20Me%20pueden%20ayudar?" target="_blank">
+          <a class="btn btn-sm btn-primary display-4" href="https://api.whatsapp.com/send?phone=56932522012&text=Hola!%20Me%20pueden%20ayudar?" target="_blank">
             <span class="socicon socicon-whatsapp mbr-iconfont mbr-iconfont-btn"></span>
             Whatsapp!
           </a>
@@ -131,7 +131,7 @@
           <p class="mbr-text"><strong>Direccion</strong>&nbsp;<br>
             <br>Echeñique 5839,
             <br>Oficina 311, La Reina, Santiago<br>
-            <br><strong>Contacto</strong><br>Email: esteticanvovapiel@gmail.com<br>Telefono:<br>+569-98955831
+            <br><strong>Contacto</strong><br>Email: esteticanvovapiel@gmail.com<br>Telefono:<br>+56932522012
           </p>
         </div>
         <div class="col-12 col-md-3 mbr-fonts-style display-7">
@@ -201,6 +201,26 @@
 <script src="<?PHP echo base_url('assets/ytplayer/jquery.mb.ytplayer.min.js'); ?>"></script>
 <script src="<?PHP echo base_url('assets/theme/js/script.js'); ?>"></script>
 <script src="<?PHP echo base_url('assets/slidervideo/script.js'); ?>"></script>
+
+<!-- Facebook Pixel Code 
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+ fbq('init', '332499177402667'); 
+fbq('track', 'PageView');
+</script>
+<noscript>
+ <img height="1" width="1" 
+src="https://www.facebook.com/tr?id=332499177402667&ev=PageView
+&noscript=1"/>
+</noscript>
+ End Facebook Pixel Code -->
 
 
 </body>
