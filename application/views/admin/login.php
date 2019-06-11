@@ -53,6 +53,12 @@
         form.submit();
       }
 
+      function hideMessage() {
+        const $message = document.querySelector('article.message');
+
+        if ($message) $message.remove();
+      }
+
       function checkUser() {
         hideMessage();
         const $user = document.getElementById("username");

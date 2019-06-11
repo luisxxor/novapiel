@@ -19,6 +19,12 @@ class Usuario extends CI_Controller {
   }
 
   function getUsers() {
+
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
     $data['users'] = $this->user->getAll();
     header('Content-Type: application/json');
     echo json_encode(['users' => $data['users']]);

@@ -2,11 +2,11 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ventas extends CI_Controller {
+class Agendamiento extends CI_Controller {
 
   public function __construct() {
     parent::__construct();
-    $this->load->model('Sell_model', 'sell');
+    $this->load->model('Appointment_model', 'appointment');
   }
 
   public function index() {
@@ -14,11 +14,30 @@ class Ventas extends CI_Controller {
       redirect('admin');
     }
     
-    $data = array('content' => 'admin/venta/index','title' => 'Novapiel - Ventas');
+    $data = array('content' => 'admin/agendamiento/index','title' => 'Novapiel - Agendamientos');
     $this->load->view('admin/template',$data);
   }
-    
-  public function getSessions() {
+
+  function getAppointments() {
+
+    if ($this->session->userdata('is_authenticated') == FALSE) {
+      echo json_encode(['status' => '403','message' => 'Permission Denied']);
+      return null;
+    }
+
+
+    $data = $this->appointment->getAppointments();
+
+    foreach ($data as &$appointment) {
+      $appointment['ventas'] = boolval($appointment['ventas']);
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode(['appointments' => $data ]);
+
+  }
+
+  function getSessions() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -26,8 +45,8 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->get('id');
 
-    $result = $this->sell->getSessions($id);
-
+    $result = $this->appointment->getSessions($id);
+    
     header('Content-Type: application/json');
     echo json_encode(['sessions' => $result]);
   }
@@ -38,29 +57,29 @@ class Ventas extends CI_Controller {
       return null;
     }
     
-    $data = json_decode($this->input->post('sell_form'),true);
+    $data = json_decode($this->input->post('appointment_form'),true);
 
-    if($data['sell']['id'] == null) {
-      $data['sell']['id'] = $this->sell->createSell($data['sell']);
+    if($data['appointment']['id'] == null) {
+      $data['appointment']['id'] = $this->appointment->createAppointment($data['appointment']);
     } else {
-      $this->sell->updateSell($data['sell']);
+      $this->appointment->updateAppointment($data['appointment']);
     }
 
     $createSessions = [];
     $updateSessions = [];
 
-    foreach($data['sessions'] as $val) {
-      $val['orden_id'] = $data['sell']['id'];
-      if($val['id'] == NULL) {
-        $createSessions[] = $val;
+    foreach($data['sessions'] as $session) {
+      $session['orden_id'] = $data['appointment']['id'];
+      if($session['id'] == NULL) {
+        $createSessions[] = $session;
       } else {
-        $updateSessions[] = $val;
+        $updateSessions[] = $session;
       }
     }
 
-    $resultCreate = count($createSessions) > 0 ? $this->sell->createSessions($createSessions) : array('code' => 0);
+    $resultCreate = count($createSessions) > 0 ? $this->appointment->createSessions($createSessions) : array('code' => 0);
 
-    $resultUpdate = count($updateSessions) > 0 ? $this->sell->updateSessions($updateSessions) : array('code' => 0);
+    $resultUpdate = count($updateSessions) > 0 ? $this->appointment->updateSessions($updateSessions) : array('code' => 0);
 
     if($resultCreate['code'] == 0 AND $resultUpdate['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Sesiones actualizadas correctamente','responseCreate' => $resultCreate, 'responseUpdate' => $resultUpdate]);
@@ -77,16 +96,18 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->post('id');
 
-    $result = $this->sell->deleteSession($id);
+    $result = $this->appointment->deleteSession($id);
 
-    if($result['code'] == 0) {
+    $result_clean = $this->appointment->deleteOrdersThatDontHaveSessions();
+
+    if($result['code'] == 0 && $result_clean['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Sesion eliminada correctamente','response' => $result]);
     } else {
       echo json_encode(['status' => '500', 'message' => 'Sesion no eliminada, ha ocurrido un error', 'response' => $result]);
     }
   }
 
-  public function deleteSell() {
+  public function deleteAppointment() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -94,7 +115,7 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->post('id');
 
-    $result = $this->sell->deleteSell($id);
+    $result = $this->appointment->deleteAppointment($id);
 
     if($result['code'] == 0) {
       echo json_encode(['status' => '200', 'message' => 'Orden de venta eliminada correctamente','response' => $result]);
@@ -103,35 +124,7 @@ class Ventas extends CI_Controller {
     }
   }
 
-  public function getSells() {
-    if ($this->session->userdata('is_authenticated') == FALSE) {
-      echo json_encode(['status' => '403','message' => 'Permission Denied']);
-      return null;
-    }
-
-    $data = $this->sell->getSells();
-
-
-    foreach ($data as &$sell) {
-      $sell['agendamientos'] = boolval($sell['agendamientos']);
-    }
-
-    echo json_encode(['sells' => $data]);
-  }
-
-  public function getAllPaidSessions() {
-    if ($this->session->userdata('is_authenticated') == FALSE) {
-      echo json_encode(['status' => '403','message' => 'Permission Denied']);
-      return null;
-    }
-
-    $result = $this->sell->getAllPaidSessions();
-    
-    header('Content-Type: application/json');
-    echo json_encode($result);
-  }
-
-  public function getUnpaidSessions() {
+  public function getPaidSessions() {
     if ($this->session->userdata('is_authenticated') == FALSE) {
       echo json_encode(['status' => '403','message' => 'Permission Denied']);
       return null;
@@ -139,10 +132,10 @@ class Ventas extends CI_Controller {
 
     $id = $this->input->get('id');
 
-    $result = $this->sell->getUnpaidSessions($id);
+    $result = $this->appointment->getPaidSessions($id);
     
     header('Content-Type: application/json');
-    $result->unpaid_sessions = intval($result->unpaid_sessions);
+    $result->paid_sessions = intval($result->paid_sessions);
     echo json_encode($result);
 
   }
@@ -155,13 +148,14 @@ class Ventas extends CI_Controller {
 
     $date = $this->input->get('date');
     $order_id = $this->input->get('order_id');
-    $result = $this->sell->getAppointedDates($date,$order_id);
+    $result = $this->appointment->getAppointedDates($date,$order_id);
 
     $formattedResult = [];
     
     foreach($result as $r) {
       $formattedResult[] = $r['hora'];
     }
+
 
     $hours = [];
     for($i = 0; $i < 24; $i++) {
@@ -173,7 +167,10 @@ class Ventas extends CI_Controller {
       $hours[] = ['value' => $i, 'text' => $text];
     };
 
+
+
+
     header('Content-Type: application/json');
     echo json_encode($hours);
-  }  
+  }    
 }

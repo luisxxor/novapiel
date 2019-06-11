@@ -19,6 +19,5 @@
       $result = $query->result();
       return $result[0];
     }
-
   }
 ?>
