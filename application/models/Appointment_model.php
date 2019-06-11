@@ -9,7 +9,6 @@ class Appointment_model extends CI_Model {
   public function getSessions($id) {
     $result = $this->db->query("SELECT s.id, s.fecha, s.hora, s.fecha_pago ,round(a.precio/(SELECT COUNT(id) FROM `sesion` WHERE orden_id = $id), 2) as precio FROM sesion s LEFT JOIN agendamientos a ON a.id = s.orden_id WHERE orden_id = $id AND s.pagado = FALSE");
 
-
     return $result->result_array();
   }
 

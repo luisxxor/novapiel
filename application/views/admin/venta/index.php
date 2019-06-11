@@ -493,7 +493,9 @@
         })
       },
       filteredTotal() {
-       return this.filteredPaidSessions.length > 0 ? this.filteredPaidSessions.reduce( (old_val, new_val) => parseFloat(old_val.precio) + parseFloat(new_val.precio) ) : 0;
+       return this.filteredPaidSessions.length > 0 ? this.filteredPaidSessions.reduce( (old_val, new_val) => {
+        return parseFloat(old_val) + parseFloat(new_val.precio)
+       }, 0) : 0;
       },
       invalidForm() {
         return this.errors.all().length > 0 || this.sessions.length === 0;
