@@ -54,6 +54,7 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['botox'] = 'servicios/botox';
 $route['peeling_facial'] = 'servicios/peeling_facial';
+$route['peeling_ultrasonico'] = 'servicios/peeling_ultrasonico';
 $route['prp'] = 'servicios/prp';
 $route['mesoterapia_facial'] = 'servicios/mesoterapia_facial';
 $route['hilos_revitalizantes'] = 'servicios/hilos_revitalizantes';
