@@ -247,7 +247,6 @@ tenemos una completa gama de servicios como tratamientos para el acne, toxina bo
 <script src="<?PHP echo base_url('assets/theme/js/script.js'); ?>"></script>
 <script src="<?PHP echo base_url('assets/slidervideo/script.js'); ?>"></script>
 
-<!-- Facebook Pixel Code 
 <script>
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -265,8 +264,6 @@ fbq('track', 'PageView');
 src="https://www.facebook.com/tr?id=332499177402667&ev=PageView
 &noscript=1"/>
 </noscript>
- End Facebook Pixel Code -->
-
 
 </body>
 </html>
