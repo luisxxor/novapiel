@@ -132,6 +132,25 @@
     </figure>
 </section>
 
+<section class="mbr-section content4 cid-rsMz4crCTK" id="content4-2i">
+
+    
+
+    <div class="container">
+        <div class="media-container-row">
+            <div class="title col-12 col-md-8 py-3">
+                <h2 class="align-center pb-3 mbr-fonts-style display-2">
+                    Trabajamos con equipos de Ultima Generacion</h2>
+                <h3 class="mbr-section-subtitle align-center mbr-light mbr-fonts-style display-5">
+                    Nuestra centrifuga Scilogex de última generacón garantiza una extraccion óptima de las plaquetas en la sangre lo que se traduce 
+                    en la obtencion de un plasma 100% rico en plaquetas obteniendo óptimos resultados</h3>
+                
+                  <img src="<?PHP echo base_url('assets/images/scilogex.jpg'); ?>" style="width: 100%" alt="Plasma" title="">
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="cid-rfV734R5bw" id="pricing-tables1-1a">
 
 
@@ -145,7 +164,7 @@
                         <span class="price-value mbr-fonts-style display-5">
                             $
                         </span>
-                        <span class="price-figure mbr-fonts-style display-2">70.000</span>
+                        <span class="price-figure mbr-fonts-style display-2">69.990</span>
                         <small class="price-term mbr-fonts-style display-7">
                             <br>por sesión
                         </small>
@@ -172,7 +191,7 @@
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-2">
-                            80.000</span>
+                            79.990</span>
                         <small class="price-term mbr-fonts-style display-7">
                             <br>por sesión
                         </small>
@@ -199,7 +218,7 @@
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-2">
-                            90.000</span>
+                            89.990</span>
                         <small class="price-term mbr-fonts-style display-7"><br>por sesión<br></small>
                     </div>
                 </div>
@@ -224,7 +243,7 @@
                             $
                         </span>
                         <span class="price-figure mbr-fonts-style display-2">
-                            100.000</span>
+                            99.990</span>
                         <small class="price-term mbr-fonts-style display-7">
                             por sesión
                         </small>
